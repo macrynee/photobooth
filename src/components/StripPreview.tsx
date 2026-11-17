@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { PhotoStripData, StickerItem } from '../types/photobooth';
 import { FILTERS } from './FilterSelector';

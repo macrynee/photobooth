@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Sparkles, Smile, Award, Edit3, Trash2 } from 'lucide-react';
 import { StickerItem } from '../types/photobooth';

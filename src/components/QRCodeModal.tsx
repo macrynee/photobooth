@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { QrCode, Download, Printer, Share2, Copy, Check, ExternalLink, X, Sparkles } from 'lucide-react';
 

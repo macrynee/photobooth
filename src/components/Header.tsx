@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Camera, Volume2, VolumeX, RefreshCw, QrCode, Shield, Lock } from 'lucide-react';
 import { AppStep } from '../types/photobooth';

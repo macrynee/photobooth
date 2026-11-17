@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, RefreshCw, FlipHorizontal, Play, Sparkles, CheckCircle2, RotateCcw, AlertCircle, Video } from 'lucide-react';
 import { FilterType, LayoutType } from '../types/photobooth';

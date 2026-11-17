@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Download, Sparkles, Camera, Share2, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 

@@ -7,6 +7,7 @@ node_modules/
 .env.*.local
 
 # Production Build
+.next/
 dist/
 dist-ssr/
 *.local

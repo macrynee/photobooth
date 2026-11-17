@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FilterType, FilterConfig } from '../types/photobooth';
 import { Sparkles, Check } from 'lucide-react';

@@ -1,29 +1,32 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { LayoutType, FilterType, FrameColor, PhotoStripData, AppStep } from './types/photobooth';
-import { Header } from './components/Header';
-import { LayoutSelector } from './components/LayoutSelector';
-import { CameraView } from './components/CameraView';
-import { StickerCanvas } from './components/StickerCanvas';
-import { ExportView } from './components/ExportView';
-import { MobileViewer } from './components/MobileViewer';
-import { AccessCodeModal } from './components/AccessCodeModal';
-import { AdminLogin } from './components/AdminLogin';
-import { AdminRegister } from './components/AdminRegister';
-import { AdminDashboard } from './components/AdminDashboard';
-import { sfx } from './utils/audio';
+import { LayoutType, FilterType, FrameColor, PhotoStripData, AppStep } from '@/types/photobooth';
+import { Header } from '@/components/Header';
+import { LayoutSelector } from '@/components/LayoutSelector';
+import { CameraView } from '@/components/CameraView';
+import { StickerCanvas } from '@/components/StickerCanvas';
+import { ExportView } from '@/components/ExportView';
+import { MobileViewer } from '@/components/MobileViewer';
+import { AccessCodeModal } from '@/components/AccessCodeModal';
+import { AdminLogin } from '@/components/AdminLogin';
+import { AdminRegister } from '@/components/AdminRegister';
+import { AdminDashboard } from '@/components/AdminDashboard';
+import { sfx } from '@/utils/audio';
 
 type ViewMode = 'booth' | 'admin_login' | 'admin_register' | 'admin_dashboard';
 
-export const App: React.FC = () => {
+export const PhotoboothApp: React.FC = () => {
   // Check if viewing via QR code session link on mobile
   const [mobileSessionId, setMobileSessionId] = useState<string | null>(null);
 
   // Photobooth Access Lock State
   const [isBoothLocked, setIsBoothLocked] = useState<boolean>(() => {
-    // Check if session was already validated in this browser tab
+    if (typeof window === 'undefined') return true;
     return !sessionStorage.getItem('snapbox_unlocked_code');
   });
   const [activeAccessCode, setActiveAccessCode] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
     return sessionStorage.getItem('snapbox_unlocked_code') || null;
   });
   const [activeCodeNote, setActiveCodeNote] = useState<string | null>(null);
@@ -33,18 +36,22 @@ export const App: React.FC = () => {
 
   // Admin Session State
   const [adminToken, setAdminToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem('snapbox_admin_token') || null;
   });
   const [adminInfo, setAdminInfo] = useState<{ id: string; username: string; email: string } | null>(() => {
+    if (typeof window === 'undefined') return null;
     const raw = localStorage.getItem('snapbox_admin_info');
     return raw ? JSON.parse(raw) : null;
   });
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const sessionParam = params.get('session');
-    if (sessionParam) {
-      setMobileSessionId(sessionParam);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const sessionParam = params.get('session');
+      if (sessionParam) {
+        setMobileSessionId(sessionParam);
+      }
     }
   }, []);
 
@@ -72,7 +79,9 @@ export const App: React.FC = () => {
 
   // Successful Access Code Verification
   const handleAccessCodeSuccess = (code: string, note?: string) => {
-    sessionStorage.setItem('snapbox_unlocked_code', code);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('snapbox_unlocked_code', code);
+    }
     setActiveAccessCode(code);
     setActiveCodeNote(note || null);
     setIsBoothLocked(false);
@@ -80,7 +89,9 @@ export const App: React.FC = () => {
   };
 
   const handleLockBooth = () => {
-    sessionStorage.removeItem('snapbox_unlocked_code');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('snapbox_unlocked_code');
+    }
     setActiveAccessCode(null);
     setActiveCodeNote(null);
     setIsBoothLocked(true);
@@ -103,7 +114,9 @@ export const App: React.FC = () => {
     });
     setStep('setup');
     // Re-lock booth so next user must provide a new single-use code
-    sessionStorage.removeItem('snapbox_unlocked_code');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('snapbox_unlocked_code');
+    }
     setActiveAccessCode(null);
     setActiveCodeNote(null);
     setIsBoothLocked(true);
@@ -122,7 +135,9 @@ export const App: React.FC = () => {
       <MobileViewer
         sessionId={mobileSessionId}
         onNewSession={() => {
-          window.history.pushState({}, '', window.location.pathname);
+          if (typeof window !== 'undefined') {
+            window.history.pushState({}, '', window.location.pathname);
+          }
           setMobileSessionId(null);
           handleReset();
         }}
@@ -165,8 +180,10 @@ export const App: React.FC = () => {
         admin={adminInfo}
         token={adminToken}
         onLogout={() => {
-          localStorage.removeItem('snapbox_admin_token');
-          localStorage.removeItem('snapbox_admin_info');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('snapbox_admin_token');
+            localStorage.removeItem('snapbox_admin_info');
+          }
           setAdminToken(null);
           setAdminInfo(null);
           setViewMode('admin_login');
@@ -286,4 +303,4 @@ export const App: React.FC = () => {
   );
 };
 
-export default App;
+export default PhotoboothApp;

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { PhotoStripData, StickerItem, FilterType, FrameColor } from '../types/photobooth';
 import { StripPreview } from './StripPreview';

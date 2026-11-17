@@ -4,11 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "server": "tsx server/index.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "db:setup": "tsx scripts/setup-db.ts",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
     "login": "node node_modules/vercel/dist/vc.js login",
     "deploy": "node node_modules/vercel/dist/vc.js"
   },
@@ -20,6 +19,7 @@
     "express": "^5.3.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.16.0",
+    "next": "^14.2.18",
     "pg": "^8.23.1",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
