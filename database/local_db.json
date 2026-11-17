@@ -1,0 +1,124 @@
+{
+  "admins": [
+    {
+      "id": "admin_1",
+      "username": "mac",
+      "email": "mac@snapbox.local",
+      "password_hash": "$2b$10$nc6/3rfwFGJayr923.fcc.373vfoDd6S1.rBrcCW2H60Yrh0srLNS",
+      "role": "admin",
+      "created_at": "2026-11-17T14:48:00.000Z"
+    },
+    {
+      "id": "admin_uopllft",
+      "username": "testoperator_0x50",
+      "email": "operator_1794927450936@snapbox.local",
+      "password_hash": "$2b$10$eyQTyASOJIo3voC5y1bv5uP92OAyaK346Qer69BXI4BhuzOvqWZy.",
+      "role": "admin",
+      "created_at": "2026-11-17T14:57:31.122Z"
+    }
+  ],
+  "access_codes": [
+    {
+      "id": "code_1",
+      "code": "8K2M9",
+      "note": "Single Session Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:48:00.000Z"
+    },
+    {
+      "id": "code_2",
+      "code": "7B4X1",
+      "note": "Single Session Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:48:00.000Z"
+    },
+    {
+      "id": "code_3",
+      "code": "A59F2",
+      "note": "Single Session Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:48:00.000Z"
+    },
+    {
+      "id": "code_hanu9dk",
+      "code": "PABWW",
+      "note": "Quick Auto-Generated Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:52:33.169Z"
+    },
+    {
+      "id": "code_pa3bo1f",
+      "code": "9ZGRS",
+      "note": "Quick Auto-Generated Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:52:36.795Z"
+    },
+    {
+      "id": "code_zbp6e6q",
+      "code": "T57QV",
+      "note": "Quick Auto-Generated Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:52:38.464Z"
+    },
+    {
+      "id": "code_mt0ct6j",
+      "code": "HAMGA",
+      "note": "Quick Auto-Generated Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:53:53.840Z"
+    },
+    {
+      "id": "code_q60f78l",
+      "code": "8LPM3",
+      "note": "Quick Auto-Generated Pass",
+      "max_uses": 1,
+      "current_uses": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_by": "admin_1",
+      "created_at": "2026-11-17T14:53:54.812Z"
+    }
+  ],
+  "photo_sessions": [
+    {
+      "id": "test_session_1794928240048",
+      "access_code": null,
+      "access_code_id": null,
+      "image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "title": "Neon Test Strip",
+      "subtitle": "Connected to Neon PostgreSQL",
+      "layout": "strip-3",
+      "filter": "normal",
+      "frame_color": "#000000",
+      "created_at": "2026-11-17T15:10:40.049Z"
+    }
+  ]
+}
