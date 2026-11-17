@@ -8,7 +8,8 @@
     "server": "tsx server/index.ts",
     "db:setup": "tsx scripts/setup-db.ts",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "node node_modules/vercel/dist/vc.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
