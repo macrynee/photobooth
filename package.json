@@ -9,6 +9,7 @@
     "db:setup": "tsx scripts/setup-db.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "login": "node node_modules/vercel/dist/vc.js login",
     "deploy": "node node_modules/vercel/dist/vc.js"
   },
   "dependencies": {
