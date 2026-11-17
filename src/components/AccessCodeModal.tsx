@@ -46,15 +46,20 @@ export const AccessCodeModal: React.FC<AccessCodeModalProps> = ({
         body: JSON.stringify({ code: code.trim().toUpperCase() }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(`Server returned error ${response.status} (${response.statusText || 'Internal error'})`);
+      }
 
-      if (response.ok && data.success) {
+      if (response.ok && data?.success) {
         onSuccess(data.code, data.note);
       } else {
-        setError(data.error || 'Invalid or expired access code.');
+        setError(data?.error || 'Invalid or expired access code.');
       }
-    } catch (err) {
-      setError('Could not connect to authentication server. Please try again.');
+    } catch (err: any) {
+      setError(err?.message || 'Could not connect to authentication server. Please try again.');
     } finally {
       setIsLoading(false);
     }

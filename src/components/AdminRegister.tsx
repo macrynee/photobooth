@@ -53,17 +53,22 @@ export const AdminRegister: React.FC<AdminRegisterProps> = ({
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(`Server returned error ${response.status} (${response.statusText || 'Internal error'})`);
+      }
 
-      if (response.ok && data.success) {
+      if (response.ok && data?.success) {
         localStorage.setItem('snapbox_admin_token', data.token);
         localStorage.setItem('snapbox_admin_info', JSON.stringify(data.admin));
         onRegisterSuccess(data.token, data.admin);
       } else {
-        setError(data.error || 'Failed to register admin account.');
+        setError(data?.error || `Failed to register admin account (status ${response.status}).`);
       }
-    } catch (err) {
-      setError('Failed to connect to backend server. Make sure the backend is running.');
+    } catch (err: any) {
+      setError(err?.message || 'Connection error. Please try again.');
     } finally {
       setIsLoading(false);
     }

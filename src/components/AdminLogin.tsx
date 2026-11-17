@@ -36,17 +36,22 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
         body: JSON.stringify({ usernameOrEmail: usernameOrEmail.trim(), password }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(`Server returned error ${response.status} (${response.statusText || 'Internal error'})`);
+      }
 
-      if (response.ok && data.success) {
+      if (response.ok && data?.success) {
         localStorage.setItem('snapbox_admin_token', data.token);
         localStorage.setItem('snapbox_admin_info', JSON.stringify(data.admin));
         onLoginSuccess(data.token, data.admin);
       } else {
-        setError(data.error || 'Invalid credentials.');
+        setError(data?.error || `Invalid credentials (status ${response.status}).`);
       }
-    } catch (err) {
-      setError('Failed to connect to backend server. Make sure the backend is running.');
+    } catch (err: any) {
+      setError(err?.message || 'Connection error. Please try again.');
     } finally {
       setIsLoading(false);
     }
