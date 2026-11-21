@@ -1,5 +1,5 @@
 import { PhotoStripData, FilterType } from '../types/photobooth';
-import { drawCanvasPattern, getCanvasHeaderFont } from './patternStyles';
+import { drawCanvasPattern, getCanvasHeaderFont, getSubtitlePartnerColor } from './patternStyles';
 
 export const FILTER_CANVAS_MAP: Record<FilterType, string> = {
   normal: 'none',
@@ -218,8 +218,9 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
 
   // Subtitle / Personal Note
   if (data.subtitle) {
+    const subtitlePartner = getSubtitlePartnerColor(data.frameColor, data.category, data.subtitleColor);
     ctx.font = '600 28px "Caveat", cursive';
-    ctx.fillStyle = isDarkFrame ? '#f472b6' : '#db2777'; // cute pink accent
+    ctx.fillStyle = subtitlePartner.hex;
     ctx.fillText(data.subtitle, canvasWidth / 2, footerY + 60);
   }
 

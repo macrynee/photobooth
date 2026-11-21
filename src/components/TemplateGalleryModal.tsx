@@ -113,6 +113,7 @@ export const TemplateGalleryModal: React.FC<TemplateGalleryModalProps> = ({
     stickers: activeTemplate.stickers || [],
     title: activeTemplate.title,
     subtitle: activeTemplate.subtitle,
+    subtitleColor: activeTemplate.subtitleColor,
     showDate: activeTemplate.showDate,
     dateStr: new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
     backgroundPattern: activeTemplate.backgroundPattern,
@@ -427,6 +428,55 @@ export const TemplateGalleryModal: React.FC<TemplateGalleryModalProps> = ({
                       onChange={(e) => setActiveTemplate((prev) => ({ ...prev, subtitle: e.target.value }))}
                       className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-pink-500"
                     />
+                  </div>
+
+                  {/* Subtitle / Note Color Partnering */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-slate-300">
+                        Handwritten Note Color
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTemplate((prev) => ({ ...prev, subtitleColor: undefined }))}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all ${
+                          !activeTemplate.subtitleColor
+                            ? 'bg-pink-500 text-white border-pink-400'
+                            : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
+                        }`}
+                      >
+                        Auto-Match Background
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {[
+                        { hex: '#fbbf24', name: 'Champagne Gold' },
+                        { hex: '#92400e', name: 'Vintage Bronze' },
+                        { hex: '#334155', name: 'Charcoal Slate' },
+                        { hex: '#cbd5e1', name: 'Minimalist Silver' },
+                        { hex: '#047857', name: 'Matcha Emerald' },
+                        { hex: '#38bdf8', name: 'Sky Blue' },
+                        { hex: '#7c3aed', name: 'Velvet Violet' },
+                        { hex: '#be185d', name: 'Wine Rose' },
+                        { hex: '#f97316', name: 'Pumpkin Amber' },
+                        { hex: '#fef08a', name: 'Cyber Yellow' },
+                        { hex: '#ffffff', name: 'Pure White' },
+                      ].map((sc) => (
+                        <button
+                          key={sc.hex}
+                          type="button"
+                          onClick={() => setActiveTemplate((prev) => ({ ...prev, subtitleColor: sc.hex }))}
+                          className={`w-6 h-6 rounded-full border-2 transition-transform ${
+                            activeTemplate.subtitleColor === sc.hex
+                              ? 'scale-125 border-pink-400 ring-2 ring-pink-500/50 shadow-md'
+                              : 'border-slate-700 hover:scale-110'
+                          }`}
+                          style={{ backgroundColor: sc.hex }}
+                          title={sc.name}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
 

@@ -29,15 +29,15 @@ export interface LayoutConfig {
   badge: string;
 }
 
-export type FilterType = 
-  | 'normal' 
-  | 'bw' 
-  | 'sepia' 
-  | 'film' 
-  | 'warm' 
-  | 'cool' 
-  | 'vibrant' 
-  | 'cyber' 
+export type FilterType =
+  | 'normal'
+  | 'bw'
+  | 'sepia'
+  | 'film'
+  | 'warm'
+  | 'cool'
+  | 'vibrant'
+  | 'cyber'
   | 'soft';
 
 export interface FilterConfig {
@@ -48,7 +48,7 @@ export interface FilterConfig {
   tagline: string;
 }
 
-export type FrameColor = 
+export type FrameColor =
   | '#ffffff' // Pure White
   | '#121214' // Classic Midnight Black
   | '#ffe4e6' // Pastel Blossom Pink
@@ -82,6 +82,7 @@ export interface PhotoStripData {
   stickers: StickerItem[];
   title: string;
   subtitle: string;
+  subtitleColor?: string;
   showDate: boolean;
   dateStr: string;
   category?: string;
@@ -109,6 +110,7 @@ export interface PictureTemplate {
   backgroundImage?: string;
   headerFont?: HeaderFont;
   textColor?: string;
+  subtitleColor?: string;
   watermarkText?: string; // Default: 'SILONG CAFE'
   watermarkPosition?: 'header' | 'footer';
   borderStyle?: 'solid' | 'dashed' | 'double' | 'rounded' | 'none';

@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
       backgroundImage: row.backgroundImage || row.background_image || undefined,
       headerFont: row.headerFont || row.header_font || 'grotesk',
       textColor: row.textColor || row.text_color || undefined,
+      subtitleColor: row.subtitleColor || row.subtitle_color || undefined,
       watermarkText: row.watermarkText || row.watermark_text || 'SILONG CAFE',
       watermarkPosition: row.watermarkPosition || row.watermark_position || 'footer',
       borderStyle: row.borderStyle || row.border_style || 'solid',

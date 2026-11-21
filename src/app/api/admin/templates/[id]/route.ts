@@ -60,6 +60,8 @@ export async function PUT(
     if (body.header_font !== undefined) updatePayload.header_font = body.header_font;
     if (body.textColor !== undefined) updatePayload.text_color = body.textColor;
     if (body.text_color !== undefined) updatePayload.text_color = body.text_color;
+    if (body.subtitleColor !== undefined) updatePayload.subtitle_color = body.subtitleColor;
+    if (body.subtitle_color !== undefined) updatePayload.subtitle_color = body.subtitle_color;
     if (body.watermarkText !== undefined) updatePayload.watermark_text = body.watermarkText;
     if (body.watermark_text !== undefined) updatePayload.watermark_text = body.watermark_text;
     if (body.watermarkPosition !== undefined) updatePayload.watermark_position = body.watermarkPosition;

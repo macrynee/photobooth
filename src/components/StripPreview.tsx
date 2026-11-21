@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PhotoStripData, StickerItem } from '../types/photobooth';
 import { FILTERS } from './FilterSelector';
-import { getPatternCss, getFontFamilyClass } from '../utils/patternStyles';
+import { getPatternCss, getFontFamilyClass, getSubtitlePartnerColor } from '../utils/patternStyles';
 
 interface StripPreviewProps {
   data: PhotoStripData;
@@ -194,15 +194,17 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
 
       {/* Footer Branding, Handwritten Note & Date */}
       <div className="pb-6 pt-2 text-center px-4 space-y-1">
-        {data.subtitle && (
-          <p
-            className={`font-handwriting text-2xl font-bold leading-tight ${
-              isDarkFrame ? 'text-pink-400' : 'text-pink-600'
-            }`}
-          >
-            {data.subtitle}
-          </p>
-        )}
+        {data.subtitle && (() => {
+          const subtitlePartner = getSubtitlePartnerColor(data.frameColor, data.category, data.subtitleColor);
+          return (
+            <p
+              className={`font-handwriting text-2xl font-bold leading-tight ${subtitlePartner.className}`}
+              style={{ color: subtitlePartner.hex }}
+            >
+              {data.subtitle}
+            </p>
+          );
+        })()}
 
         {data.showDate && (
           <div

@@ -5,6 +5,7 @@ import { LayoutType, FrameColor, FilterType, PictureTemplate, DeviceRatioMode } 
 import { LayoutGrid, Check, Sparkles, Clock, Palette, Calendar, Layers, ChevronRight, X, Smartphone, Tablet, Laptop, Camera } from 'lucide-react';
 import { MONTH_NAMES } from './AdminTemplateManager';
 import { TemplateGalleryModal } from './TemplateGalleryModal';
+import { getSubtitlePartnerColor } from '../utils/patternStyles';
 
 interface LayoutSelectorProps {
   selectedLayout: LayoutType;
@@ -303,17 +304,17 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
                     >
                       {tpl.title}
                     </p>
-                    {tpl.subtitle && (
-                      <p
-                        className={`text-[9px] font-handwriting font-bold truncate mt-0.5 ${
-                          tpl.frameColor === '#121214' || tpl.frameColor === '#0f172a'
-                            ? 'text-pink-400'
-                            : 'text-pink-600'
-                        }`}
-                      >
-                        {tpl.subtitle}
-                      </p>
-                    )}
+                    {tpl.subtitle && (() => {
+                      const partner = getSubtitlePartnerColor(tpl.frameColor, tpl.category, tpl.subtitleColor);
+                      return (
+                        <p
+                          className={`text-[9px] font-handwriting font-bold truncate mt-0.5 ${partner.className}`}
+                          style={{ color: partner.hex }}
+                        >
+                          {tpl.subtitle}
+                        </p>
+                      );
+                    })()}
                   </div>
 
                   {/* Name and Tagline */}

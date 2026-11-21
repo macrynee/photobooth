@@ -52,6 +52,7 @@ export interface PictureTemplateRecord {
   background_image?: string;
   header_font?: string;
   text_color?: string;
+  subtitle_color?: string;
   watermark_text?: string;
   watermark_position?: string;
   border_style?: string;
@@ -81,6 +82,7 @@ export const PRESET_MONTHLY_TEMPLATES: PictureTemplateRecord[] = PRESET_GALLERY_
   background_image: t.backgroundImage,
   header_font: t.headerFont || 'grotesk',
   text_color: t.textColor,
+  subtitle_color: t.subtitleColor,
   watermark_text: t.watermarkText || 'SILONG CAFE',
   watermark_position: t.watermarkPosition || 'footer',
   border_style: t.borderStyle || 'solid',
@@ -286,6 +288,7 @@ export const db = {
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS background_image TEXT;
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS header_font VARCHAR(64) DEFAULT 'grotesk';
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS text_color VARCHAR(32);
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS subtitle_color VARCHAR(32);
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS watermark_text VARCHAR(120) DEFAULT 'SILONG CAFE';
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS watermark_position VARCHAR(32) DEFAULT 'footer';
             ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS border_style VARCHAR(32) DEFAULT 'solid';
@@ -298,8 +301,8 @@ export const db = {
             for (const tpl of PRESET_MONTHLY_TEMPLATES) {
               await client.query(
                 `INSERT INTO picture_templates 
-                 (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $25)
+                 (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, subtitle_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $26)
                  ON CONFLICT (id) DO NOTHING`,
                 [
                   tpl.id,
@@ -315,6 +318,7 @@ export const db = {
                   tpl.background_image || null,
                   tpl.header_font || 'grotesk',
                   tpl.text_color || null,
+                  tpl.subtitle_color || null,
                   tpl.watermark_text || 'SILONG CAFE',
                   tpl.watermark_position || 'footer',
                   tpl.border_style || 'solid',
@@ -736,6 +740,7 @@ export const db = {
       background_image: data.background_image || undefined,
       header_font: data.header_font || 'grotesk',
       text_color: data.text_color || undefined,
+      subtitle_color: data.subtitle_color || undefined,
       watermark_text: data.watermark_text || 'SILONG CAFE',
       watermark_position: data.watermark_position || 'footer',
       border_style: data.border_style || 'solid',
@@ -756,8 +761,8 @@ export const db = {
       try {
         const res = await pool.query(
           `INSERT INTO picture_templates 
-           (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
+           (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, subtitle_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27)
            RETURNING *`,
           [
             item.id,
@@ -773,6 +778,7 @@ export const db = {
             item.background_image || null,
             item.header_font,
             item.text_color || null,
+            item.subtitle_color || null,
             item.watermark_text,
             item.watermark_position,
             item.border_style,
@@ -824,10 +830,10 @@ export const db = {
           `UPDATE picture_templates SET 
              name = $1, description = $2, occasion = $3, category = $4, month = $5, layout = $6,
              filter = $7, frame_color = $8, background_pattern = $9, background_image = $10,
-             header_font = $11, text_color = $12, watermark_text = $13, watermark_position = $14,
-             border_style = $15, border_color = $16, title = $17, subtitle = $18, show_date = $19,
-             stickers = $20, is_default = $21, updated_at = $22
-           WHERE id = $23
+             header_font = $11, text_color = $12, subtitle_color = $13, watermark_text = $14, watermark_position = $15,
+             border_style = $16, border_color = $17, title = $18, subtitle = $19, show_date = $20,
+             stickers = $21, is_default = $22, updated_at = $23
+           WHERE id = $24
            RETURNING *`,
           [
             merged.name,
@@ -842,6 +848,7 @@ export const db = {
             merged.background_image || null,
             merged.header_font || 'grotesk',
             merged.text_color || null,
+            merged.subtitle_color || null,
             merged.watermark_text || 'SILONG CAFE',
             merged.watermark_position || 'footer',
             merged.border_style || 'solid',
@@ -909,16 +916,26 @@ export const db = {
         for (const tpl of PRESET_MONTHLY_TEMPLATES) {
           await pool.query(
             `INSERT INTO picture_templates 
-             (id, name, description, occasion, month, layout, filter, frame_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $16)
+             (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, subtitle_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $26)
              ON CONFLICT (id) DO UPDATE SET
                name = EXCLUDED.name,
                description = EXCLUDED.description,
                occasion = EXCLUDED.occasion,
+               category = EXCLUDED.category,
                month = EXCLUDED.month,
                layout = EXCLUDED.layout,
                filter = EXCLUDED.filter,
                frame_color = EXCLUDED.frame_color,
+               background_pattern = EXCLUDED.background_pattern,
+               background_image = EXCLUDED.background_image,
+               header_font = EXCLUDED.header_font,
+               text_color = EXCLUDED.text_color,
+               subtitle_color = EXCLUDED.subtitle_color,
+               watermark_text = EXCLUDED.watermark_text,
+               watermark_position = EXCLUDED.watermark_position,
+               border_style = EXCLUDED.border_style,
+               border_color = EXCLUDED.border_color,
                title = EXCLUDED.title,
                subtitle = EXCLUDED.subtitle,
                show_date = EXCLUDED.show_date,
@@ -928,10 +945,20 @@ export const db = {
               tpl.name,
               tpl.description,
               tpl.occasion,
+              tpl.category || 'minimalist',
               tpl.month,
               tpl.layout,
               tpl.filter,
               tpl.frame_color,
+              tpl.background_pattern || 'none',
+              tpl.background_image || null,
+              tpl.header_font || 'grotesk',
+              tpl.text_color || null,
+              tpl.subtitle_color || null,
+              tpl.watermark_text || 'SILONG CAFE',
+              tpl.watermark_position || 'footer',
+              tpl.border_style || 'solid',
+              tpl.border_color || null,
               tpl.title,
               tpl.subtitle,
               tpl.show_date,

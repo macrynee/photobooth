@@ -114,6 +114,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'solid',
     title: 'SILONG CAFE • STUDIO ARCHIVE',
     subtitle: 'pure & timeless moments',
+    subtitleColor: '#334155',
     showDate: true,
     stickers: [
       { id: 'stk_m1', type: 'badge', content: 'ARCHIVE 01', x: 50, y: 92, scale: 0.9, rotation: 0 },
@@ -140,6 +141,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'solid',
     title: 'SILONG CAFE • NOIR SERIES',
     subtitle: 'monochrome soul',
+    subtitleColor: '#cbd5e1',
     showDate: true,
     stickers: [
       { id: 'stk_m2', type: 'badge', content: 'NOIR ESSENCE', x: 50, y: 92, scale: 0.95, rotation: 0 },
@@ -165,6 +167,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'SILONG CAFE • MONOLITH',
     subtitle: 'simplicity is the ultimate sophistication',
+    subtitleColor: '#475569',
     showDate: true,
     stickers: [],
     isDefault: false,
@@ -191,6 +194,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'double',
     title: 'SILONG CAFE • SALON PRIVÉ',
     subtitle: 'elegance is an attitude 🏛️',
+    subtitleColor: '#92400e',
     showDate: true,
     stickers: [
       { id: 'stk_e1', type: 'emoji', content: '🏛️', x: 84, y: 12, scale: 1.1, rotation: 5 },
@@ -218,6 +222,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'solid',
     title: 'SILONG CAFE • SOIRÉE NOCTURNE',
     subtitle: 'an evening of pure grace ✨',
+    subtitleColor: '#fbbf24',
     showDate: true,
     stickers: [
       { id: 'stk_e3', type: 'emoji', content: '✨', x: 84, y: 14, scale: 1.2, rotation: 10 },
@@ -247,6 +252,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'rounded',
     title: 'HAPPY BIRTHDAY • SILONG CAFE',
     subtitle: 'make a wish & blow the candles 🎂',
+    subtitleColor: '#be185d',
     showDate: true,
     stickers: [
       { id: 'stk_b1', type: 'emoji', content: '🎂', x: 82, y: 12, scale: 1.3, rotation: 10 },
@@ -274,6 +280,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'BIRTHDAY BASH • SILONG CAFE',
     subtitle: 'cheers to another wild year 🥳',
+    subtitleColor: '#fef08a',
     showDate: true,
     stickers: [
       { id: 'stk_bn1', type: 'emoji', content: '🥳', x: 84, y: 14, scale: 1.3, rotation: 12 },
@@ -302,6 +309,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'JUST MARRIED • SILONG CAFE',
     subtitle: 'together is our favorite place to be 💍',
+    subtitleColor: '#b45309',
     showDate: true,
     stickers: [
       { id: 'stk_w1', type: 'emoji', content: '💍', x: 84, y: 14, scale: 1.3, rotation: 12 },
@@ -329,6 +337,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'MR & MRS • SILONG CAFE',
     subtitle: 'to love & cherish forever ♡',
+    subtitleColor: '#be185d',
     showDate: true,
     stickers: [
       { id: 'stk_w4', type: 'emoji', content: '🌹', x: 82, y: 14, scale: 1.2, rotation: 15 },
@@ -357,6 +366,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'CLASS OF 2026 • SILONG CAFE',
     subtitle: 'blooming into new chapters 🎓',
+    subtitleColor: '#047857',
     showDate: true,
     stickers: [
       { id: 'stk_g1', type: 'emoji', content: '🎓', x: 84, y: 12, scale: 1.3, rotation: -8 },
@@ -384,6 +394,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'HONORS SUMMIT • SILONG CAFE',
     subtitle: 'the sky is just the beginning 📜',
+    subtitleColor: '#38bdf8',
     showDate: true,
     stickers: [
       { id: 'stk_g4', type: 'emoji', content: '📜', x: 82, y: 14, scale: 1.2, rotation: 8 },
@@ -412,6 +423,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'SILONG CAFE • CYBER GLOW 2000',
     subtitle: 'virtual aesthetics & cyber dreams ★',
+    subtitleColor: '#fef08a',
     showDate: true,
     stickers: [
       { id: 'stk_y1', type: 'emoji', content: '👾', x: 82, y: 12, scale: 1.3, rotation: -10 },
@@ -439,6 +451,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'RETRO CASSETTE • SILONG CAFE',
     subtitle: 'rewind the good times 📼',
+    subtitleColor: '#d97706',
     showDate: true,
     stickers: [
       { id: 'stk_y4', type: 'emoji', content: '📼', x: 82, y: 14, scale: 1.2, rotation: 12 },
@@ -467,6 +480,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'MERRY CHRISTMAS • SILONG CAFE',
     subtitle: 'warmest holiday wishes & joy 🎄',
+    subtitleColor: '#4ade80',
     showDate: true,
     stickers: [
       { id: 'stk_c1', type: 'emoji', content: '🎄', x: 84, y: 14, scale: 1.3, rotation: 8 },
@@ -494,6 +508,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'WINTER WONDERLAND • SILONG CAFE',
     subtitle: 'let it snow, let it snow ❄️',
+    subtitleColor: '#0284c7',
     showDate: true,
     stickers: [
       { id: 'stk_c4', type: 'emoji', content: '❄️', x: 82, y: 14, scale: 1.2, rotation: 15 },
@@ -522,6 +537,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'SILONG CAFE • EXECUTIVE SUMMIT',
     subtitle: 'leadership, innovation & vision',
+    subtitleColor: '#38bdf8',
     showDate: true,
     stickers: [
       { id: 'stk_cp1', type: 'badge', content: 'SUMMIT 2026', x: 50, y: 92, scale: 1.0, rotation: 0 },
@@ -547,6 +563,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'ANNUAL TECH GALA • SILONG CAFE',
     subtitle: 'empowering the next generation',
+    subtitleColor: '#1d4ed8',
     showDate: true,
     stickers: [
       { id: 'stk_cp2', type: 'badge', content: 'SPECIAL GUEST', x: 50, y: 92, scale: 0.95, rotation: 0 },
@@ -574,6 +591,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'COZY CAFE MOMENTS • SILONG CAFE',
     subtitle: 'warm coffee & sweet peaceful days ☕',
+    subtitleColor: '#7c3aed',
     showDate: true,
     stickers: [
       { id: 'stk_a1', type: 'emoji', content: '☕', x: 84, y: 14, scale: 1.2, rotation: 10 },
@@ -601,6 +619,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'GOLDEN HOUR • SILONG CAFE',
     subtitle: 'chasing sunbeams & memories 🌻',
+    subtitleColor: '#92400e',
     showDate: true,
     stickers: [
       { id: 'stk_a4', type: 'emoji', content: '🌻', x: 84, y: 14, scale: 1.2, rotation: 12 },
@@ -630,6 +649,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     borderStyle: 'double',
     title: 'HAPPY ANNIVERSARY • SILONG CAFE',
     subtitle: 'celebrating years of endless love 🥂',
+    subtitleColor: '#b45309',
     showDate: true,
     stickers: [
       { id: 'stk_an1', type: 'emoji', content: '🥂', x: 82, y: 12, scale: 1.2, rotation: 10 },
@@ -657,6 +677,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'ANNIVERSARY • SILONG CAFE',
     subtitle: 'falling in love with you all over again ♡',
+    subtitleColor: '#be185d',
     showDate: true,
     stickers: [
       { id: 'stk_an4', type: 'emoji', content: '🌹', x: 82, y: 14, scale: 1.2, rotation: 12 },
@@ -685,6 +706,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'SPOOKY NIGHTS • SILONG CAFE',
     subtitle: 'trick or treat & spooky thrills 🎃',
+    subtitleColor: '#f97316',
     showDate: true,
     stickers: [
       { id: 'stk_h1', type: 'emoji', content: '🎃', x: 84, y: 14, scale: 1.3, rotation: 12 },
@@ -712,6 +734,7 @@ export const PRESET_GALLERY_TEMPLATES: PictureTemplate[] = [
     watermarkPosition: 'footer',
     title: 'MIDNIGHT PHANTOM • SILONG CAFE',
     subtitle: 'creepin\' it real with the best crew 🦇',
+    subtitleColor: '#fb923c',
     showDate: true,
     stickers: [
       { id: 'stk_h4', type: 'emoji', content: '🦇', x: 82, y: 12, scale: 1.2, rotation: 10 },

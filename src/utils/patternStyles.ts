@@ -182,3 +182,80 @@ export function drawCanvasPattern(
 
   ctx.restore();
 }
+
+export function getSubtitlePartnerColor(
+  frameColor: string = '#ffffff',
+  category?: string,
+  customColor?: string
+): { hex: string; className: string } {
+  if (customColor) {
+    return { hex: customColor, className: '' };
+  }
+
+  const cleanFrame = frameColor.toLowerCase();
+  const isDark = cleanFrame === '#121214' || cleanFrame === '#0f172a';
+
+  // 1. Coordinated Category themes
+  if (category) {
+    switch (category) {
+      case 'elegant':
+        return isDark
+          ? { hex: '#fbbf24', className: 'text-amber-300' } // Champagne Gold
+          : { hex: '#92400e', className: 'text-amber-800' }; // Rich Heritage Bronze
+      case 'halloween':
+        return { hex: '#f97316', className: 'text-orange-500' }; // Pumpkin Spooky Orange
+      case 'christmas':
+        return isDark
+          ? { hex: '#4ade80', className: 'text-emerald-400' } // Holiday Pine Green
+          : { hex: '#b91c1c', className: 'text-red-700' }; // Cranberry Red
+      case 'graduation':
+        return cleanFrame === '#0f172a'
+          ? { hex: '#38bdf8', className: 'text-sky-400' } // Academic Sky Blue
+          : { hex: '#047857', className: 'text-emerald-700' }; // Mint Emerald
+      case 'corporate':
+        return isDark
+          ? { hex: '#60a5fa', className: 'text-blue-400' } // Executive Electric Blue
+          : { hex: '#1e40af', className: 'text-blue-800' }; // Deep Navy Blue
+      case 'retro-y2k':
+        return cleanFrame === '#ff007f'
+          ? { hex: '#fef08a', className: 'text-yellow-200' } // Neon Cyber Yellow
+          : { hex: '#06b6d4', className: 'text-cyan-500' }; // Cyber Cyan
+      case 'anniversary':
+        return cleanFrame === '#fef3c7'
+          ? { hex: '#b45309', className: 'text-amber-700' } // Golden Milestone Amber
+          : { hex: '#db2777', className: 'text-pink-600' }; // Romance Pink
+      case 'aesthetic':
+        return cleanFrame === '#ede9fe'
+          ? { hex: '#7c3aed', className: 'text-purple-600' } // Dreamy Lavender Purple
+          : { hex: '#b45309', className: 'text-amber-700' }; // Cozy Warm Mocha
+      case 'minimalist':
+        return isDark
+          ? { hex: '#cbd5e1', className: 'text-slate-300' } // Minimalist Silver
+          : { hex: '#334155', className: 'text-slate-700' }; // Studio Charcoal
+    }
+  }
+
+  // 2. Coordinated Frame Background Color Pairing
+  switch (cleanFrame) {
+    case '#ffffff': // Pure White -> Charcoal / Slate
+      return { hex: '#334155', className: 'text-slate-700' };
+    case '#121214': // Classic Noir Black -> Champagne Gold
+      return { hex: '#fbbf24', className: 'text-amber-300' };
+    case '#ffe4e6': // Pastel Blossom Pink -> Deep Wine Rose
+      return { hex: '#be185d', className: 'text-rose-700' };
+    case '#ede9fe': // Dreamy Lavender -> Deep Velvet Violet
+      return { hex: '#7c3aed', className: 'text-purple-600' };
+    case '#d1fae5': // Mint Matcha -> Forest Matcha Green
+      return { hex: '#047857', className: 'text-emerald-700' };
+    case '#fef3c7': // Butter Vintage Cream -> Warm Vintage Bronze / Coffee
+      return { hex: '#92400e', className: 'text-amber-800' };
+    case '#0f172a': // Deep Slate Navy -> Ice Sky Blue
+      return { hex: '#38bdf8', className: 'text-sky-400' };
+    case '#ff007f': // Neon Pop Pink -> Cyber Electric Yellow
+      return { hex: '#fef08a', className: 'text-yellow-200' };
+    default:
+      return isDark
+        ? { hex: '#fbbf24', className: 'text-amber-300' }
+        : { hex: '#334155', className: 'text-slate-700' };
+  }
+}

@@ -27,6 +27,7 @@ import { LAYOUT_OPTIONS, FRAME_COLORS } from './LayoutSelector';
 import { FILTERS } from './FilterSelector';
 import { StripPreview } from './StripPreview';
 import { TEMPLATE_CATEGORIES } from '../data/presetTemplates';
+import { getSubtitlePartnerColor } from '../utils/patternStyles';
 
 interface AdminTemplateManagerProps {
   token: string;
@@ -84,6 +85,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
   const [formWatermarkText, setFormWatermarkText] = useState<string>('SILONG CAFE');
   const [formTitle, setFormTitle] = useState<string>('SILONG CAFE • STUDIO ARCHIVE');
   const [formSubtitle, setFormSubtitle] = useState<string>('memories forever ♡');
+  const [formSubtitleColor, setFormSubtitleColor] = useState<string | undefined>(undefined);
   const [formShowDate, setFormShowDate] = useState<boolean>(true);
   const [formStickers, setFormStickers] = useState<StickerItem[]>([]);
   const [newStickerEmoji, setNewStickerEmoji] = useState<string>('✨');
@@ -131,6 +133,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     setFormWatermarkText('SILONG CAFE');
     setFormTitle('SILONG CAFE • STUDIO ARCHIVE');
     setFormSubtitle('memories forever ♡');
+    setFormSubtitleColor(undefined);
     setFormShowDate(true);
     setFormStickers([
       { id: 'stk_1', type: 'emoji', content: '✨', x: 80, y: 15, scale: 1.2, rotation: 10 },
@@ -154,6 +157,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     setFormWatermarkText(template.watermarkText || 'SILONG CAFE');
     setFormTitle(template.title || 'SILONG CAFE • STUDIO ARCHIVE');
     setFormSubtitle(template.subtitle || '');
+    setFormSubtitleColor(template.subtitleColor);
     setFormShowDate(template.showDate ?? true);
     setFormStickers(template.stickers || []);
     setIsEditorOpen(true);
@@ -180,6 +184,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
         watermarkText: formWatermarkText || 'SILONG CAFE',
         title: formTitle.trim(),
         subtitle: formSubtitle.trim(),
+        subtitleColor: formSubtitleColor,
         showDate: formShowDate,
         stickers: formStickers,
       };
@@ -302,6 +307,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     stickers: formStickers,
     title: formTitle || 'SILONG CAFE • STUDIO ARCHIVE',
     subtitle: formSubtitle,
+    subtitleColor: formSubtitleColor,
     showDate: formShowDate,
     dateStr: new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
     backgroundPattern: formBackgroundPattern,
@@ -696,6 +702,59 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
                       onChange={(e) => setFormSubtitle(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-handwriting text-base focus:outline-none focus:border-pink-500"
                     />
+                  </div>
+
+                  {/* Subtitle / Note Color Partner Palette */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 flex items-center justify-between">
+                      <span>Note Color (Harmonized with background)</span>
+                      <span className="text-[10px] text-pink-400">
+                        Active: {formSubtitleColor ? formSubtitleColor : 'Auto (Partner with Frame)'}
+                      </span>
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFormSubtitleColor(undefined)}
+                        className={`px-2 py-1 rounded-md text-[10px] font-bold border transition-all ${
+                          !formSubtitleColor
+                            ? 'bg-pink-500/20 text-pink-300 border-pink-500 ring-1 ring-pink-500'
+                            : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                        }`}
+                      >
+                        Auto-Match
+                      </button>
+                      {[
+                        { label: 'Charcoal', hex: '#334155' },
+                        { label: 'Gold', hex: '#fbbf24' },
+                        { label: 'Bronze', hex: '#92400e' },
+                        { label: 'Rose', hex: '#be185d' },
+                        { label: 'Violet', hex: '#7c3aed' },
+                        { label: 'Emerald', hex: '#047857' },
+                        { label: 'Sky', hex: '#38bdf8' },
+                        { label: 'Cyber', hex: '#fef08a' },
+                        { label: 'Orange', hex: '#f97316' },
+                        { label: 'Pine', hex: '#4ade80' },
+                        { label: 'Pink', hex: '#f472b6' },
+                      ].map((item) => (
+                        <button
+                          key={item.hex}
+                          type="button"
+                          onClick={() => setFormSubtitleColor(item.hex)}
+                          title={item.label}
+                          className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all ${
+                            formSubtitleColor === item.hex
+                              ? 'ring-2 ring-pink-500 scale-110 border-white'
+                              : 'border-slate-700/60 hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: item.hex }}
+                        >
+                          {formSubtitleColor === item.hex && (
+                            <span className="text-[9px] font-bold text-black drop-shadow">✓</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 pt-1">
