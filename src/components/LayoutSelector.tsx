@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { LayoutType, FrameColor, FilterType, PictureTemplate } from '../types/photobooth';
-import { LayoutGrid, Check, Sparkles, Clock, Palette, Calendar, Layers, ChevronRight, X } from 'lucide-react';
+import { LayoutType, FrameColor, FilterType, PictureTemplate, DeviceRatioMode } from '../types/photobooth';
+import { LayoutGrid, Check, Sparkles, Clock, Palette, Calendar, Layers, ChevronRight, X, Smartphone, Tablet, Laptop, Camera } from 'lucide-react';
 import { MONTH_NAMES } from './AdminTemplateManager';
 
 interface LayoutSelectorProps {
@@ -18,6 +18,8 @@ interface LayoutSelectorProps {
   setShowDate: (b: boolean) => void;
   countdownTimer: number;
   setCountdownTimer: (s: number) => void;
+  deviceRatio?: DeviceRatioMode;
+  setDeviceRatio?: (m: DeviceRatioMode) => void;
   onApplyTemplate?: (template: PictureTemplate) => void;
   onStartSession: () => void;
 }
@@ -94,6 +96,8 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   setShowDate,
   countdownTimer,
   setCountdownTimer,
+  deviceRatio = 'camera',
+  setDeviceRatio,
   onApplyTemplate,
   onStartSession,
 }) => {
@@ -439,6 +443,44 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
                   {seconds} Seconds
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Device Camera Framing Setting */}
+          <div className="pt-4 border-t border-slate-800 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-pink-400" />
+                <span className="font-semibold text-sm text-slate-200">Device Framing & Ratio</span>
+              </div>
+              <span className="text-[11px] text-pink-400 font-bold uppercase">CP • iPad • Laptop • Camera</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { id: 'cp', label: 'CP / Phone', ratio: '3:4', icon: Smartphone },
+                { id: 'ipad', label: 'iPad', ratio: '4:3', icon: Tablet },
+                { id: 'laptop', label: 'Laptop', ratio: '16:9', icon: Laptop },
+                { id: 'camera', label: 'Camera', ratio: '1:1', icon: Camera },
+              ].map((item) => {
+                const isSelected = (deviceRatio || 'camera') === item.id;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setDeviceRatio && setDeviceRatio(item.id as DeviceRatioMode)}
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-pink-500/20 text-pink-300 border-pink-500/50 shadow-md shadow-pink-500/10'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{item.label}</span>
+                    <span className="text-[10px] opacity-75 font-normal">({item.ratio})</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

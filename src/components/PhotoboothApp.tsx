@@ -16,7 +16,7 @@ import { sfx } from '@/utils/audio';
 
 type ViewMode = 'booth' | 'admin_login' | 'admin_register' | 'admin_dashboard';
 
-import { PictureTemplate } from '../types/photobooth';
+import { PictureTemplate, DeviceRatioMode } from '../types/photobooth';
 
 export const PhotoboothApp: React.FC = () => {
   // Check if viewing via QR code session link on mobile
@@ -66,6 +66,7 @@ export const PhotoboothApp: React.FC = () => {
   const [step, setStep] = useState<AppStep>('setup');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [countdownDuration, setCountdownDuration] = useState<number>(3);
+  const [deviceRatio, setDeviceRatio] = useState<DeviceRatioMode>('camera');
 
   const [stripData, setStripData] = useState<PhotoStripData>({
     layout: 'strip-3',
@@ -256,6 +257,8 @@ export const PhotoboothApp: React.FC = () => {
             setShowDate={(b: boolean) => setStripData((prev) => ({ ...prev, showDate: b }))}
             countdownTimer={countdownDuration}
             setCountdownTimer={setCountdownDuration}
+            deviceRatio={deviceRatio}
+            setDeviceRatio={setDeviceRatio}
             onApplyTemplate={(template: PictureTemplate) => {
               setStripData((prev) => ({
                 ...prev,
@@ -283,6 +286,8 @@ export const PhotoboothApp: React.FC = () => {
             setFilter={(f: FilterType) => setStripData((prev) => ({ ...prev, filter: f }))}
             countdownDuration={countdownDuration}
             setCountdownDuration={setCountdownDuration}
+            deviceRatio={deviceRatio}
+            setDeviceRatio={setDeviceRatio}
             photos={stripData.photos}
             setPhotos={handlePhotosUpdate}
             onFinishSession={() => {

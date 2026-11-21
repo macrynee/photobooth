@@ -1,4 +1,5 @@
 export type LayoutType = 'strip-3' | 'strip-4' | 'grid-4' | 'wide-2' | 'polaroid-1';
+export type DeviceRatioMode = 'camera' | 'cp' | 'ipad' | 'laptop';
 
 export interface LayoutConfig {
   id: LayoutType;

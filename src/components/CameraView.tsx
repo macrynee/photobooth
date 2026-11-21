@@ -1,11 +1,89 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, RefreshCw, FlipHorizontal, Play, Sparkles, CheckCircle2, RotateCcw, AlertCircle, Video } from 'lucide-react';
-import { FilterType, LayoutType } from '../types/photobooth';
+import {
+  Camera,
+  RefreshCw,
+  FlipHorizontal,
+  Play,
+  Sparkles,
+  CheckCircle2,
+  RotateCcw,
+  AlertCircle,
+  Video,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Layers,
+} from 'lucide-react';
+import { FilterType, LayoutType, DeviceRatioMode } from '../types/photobooth';
 import { FILTERS, FilterSelector } from './FilterSelector';
 import { LAYOUT_OPTIONS } from './LayoutSelector';
 import { sfx } from '../utils/audio';
+
+export interface DeviceChoice {
+  id: DeviceRatioMode;
+  name: string;
+  shortLabel: string;
+  badge: string;
+  aspectRatio: number; // width / height
+  cssAspect: string;
+  maxWClass: string;
+  targetW: number;
+  targetH: number;
+  description: string;
+}
+
+export const DEVICE_CHOICES: DeviceChoice[] = [
+  {
+    id: 'camera',
+    name: 'Camera',
+    shortLabel: '1:1',
+    badge: '1:1 Square',
+    aspectRatio: 1,
+    cssAspect: 'aspect-square',
+    maxWClass: 'max-w-xl',
+    targetW: 1080,
+    targetH: 1080,
+    description: 'Classic 1:1 photobooth cut - perfect for all strip prints',
+  },
+  {
+    id: 'cp',
+    name: 'CP / Phone',
+    shortLabel: '3:4',
+    badge: '3:4 Portrait',
+    aspectRatio: 3 / 4,
+    cssAspect: 'aspect-[3/4]',
+    maxWClass: 'max-w-md',
+    targetW: 810,
+    targetH: 1080,
+    description: 'Cellphone mobile portrait ratio - fits selfie & phone screens',
+  },
+  {
+    id: 'ipad',
+    name: 'iPad',
+    shortLabel: '4:3',
+    badge: '4:3 Tablet',
+    aspectRatio: 4 / 3,
+    cssAspect: 'aspect-[4/3]',
+    maxWClass: 'max-w-2xl',
+    targetW: 1440,
+    targetH: 1080,
+    description: 'iPad & tablet sensor ratio - balanced classic frame',
+  },
+  {
+    id: 'laptop',
+    name: 'Laptop',
+    shortLabel: '16:9',
+    badge: '16:9 Wide',
+    aspectRatio: 16 / 9,
+    cssAspect: 'aspect-[16/9]',
+    maxWClass: 'max-w-3xl',
+    targetW: 1920,
+    targetH: 1080,
+    description: 'Laptop widescreen webcam - captures wider group shots',
+  },
+];
 
 interface CameraViewProps {
   layout: LayoutType;
@@ -13,6 +91,8 @@ interface CameraViewProps {
   setFilter: (f: FilterType) => void;
   countdownDuration: number;
   setCountdownDuration: (s: number) => void;
+  deviceRatio?: DeviceRatioMode;
+  setDeviceRatio?: (m: DeviceRatioMode) => void;
   photos: string[];
   setPhotos: React.Dispatch<React.SetStateAction<string[]>>;
   onFinishSession: () => void;
@@ -25,6 +105,8 @@ export const CameraView: React.FC<CameraViewProps> = ({
   setFilter,
   countdownDuration,
   setCountdownDuration,
+  deviceRatio = 'camera',
+  setDeviceRatio,
   photos,
   setPhotos,
   onFinishSession,
@@ -41,7 +123,37 @@ export const CameraView: React.FC<CameraViewProps> = ({
   const [isSimulated, setIsSimulated] = useState<boolean>(false);
   const [isMirrored, setIsMirrored] = useState<boolean>(true);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
-  const [aspectRatioMode, setAspectRatioMode] = useState<'square' | 'original'>('square');
+  const [deviceMode, setDeviceMode] = useState<DeviceRatioMode>(deviceRatio);
+
+  // Auto-detect device on initial mount if not explicitly set
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !deviceRatio) {
+      const ua = navigator.userAgent.toLowerCase();
+      const isMobile = /iphone|android|ipod|mobile/.test(ua) || window.innerWidth < 640;
+      const isTablet = /ipad|tablet/.test(ua) || (window.innerWidth >= 640 && window.innerWidth <= 1024 && 'ontouchstart' in window);
+
+      if (isMobile) {
+        setDeviceMode('cp');
+        if (setDeviceRatio) setDeviceRatio('cp');
+      } else if (isTablet) {
+        setDeviceMode('ipad');
+        if (setDeviceRatio) setDeviceRatio('ipad');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (deviceRatio) {
+      setDeviceMode(deviceRatio);
+    }
+  }, [deviceRatio]);
+
+  const handleDeviceModeChange = (mode: DeviceRatioMode) => {
+    setDeviceMode(mode);
+    if (setDeviceRatio) {
+      setDeviceRatio(mode);
+    }
+  };
 
   // Capture session states
   const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
@@ -219,7 +331,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
     };
   }, [isSimulated]);
 
-  // Capture current frame from webcam or simulated canvas
+  // Capture current frame from webcam or simulated canvas based on chosen device ratio
   const captureCurrentFrame = (): string => {
     let sourceWidth = 1080;
     let sourceHeight = 1080;
@@ -237,27 +349,27 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
     if (!sourceElement) return '';
 
-    const canvas = document.createElement('canvas');
+    const currentPreset = DEVICE_CHOICES.find((d) => d.id === deviceMode) || DEVICE_CHOICES[0];
+    const targetRatio = currentPreset.aspectRatio;
 
-    let sx = 0;
-    let sy = 0;
+    const sourceRatio = sourceWidth / sourceHeight;
     let sWidth = sourceWidth;
     let sHeight = sourceHeight;
+    let sx = 0;
+    let sy = 0;
 
-    if (aspectRatioMode === 'square') {
-      // Crop exact center square to prevent stretching or forced expansion
-      const squareSize = Math.min(sourceWidth, sourceHeight);
-      sx = Math.max(0, (sourceWidth - squareSize) / 2);
-      sy = Math.max(0, (sourceHeight - squareSize) / 2);
-      sWidth = squareSize;
-      sHeight = squareSize;
-      canvas.width = 1080;
-      canvas.height = 1080;
+    // Crop cleanly to exact device aspect ratio with zero distortion or stretching
+    if (sourceRatio > targetRatio) {
+      sWidth = Math.round(sourceHeight * targetRatio);
+      sx = Math.max(0, Math.round((sourceWidth - sWidth) / 2));
     } else {
-      // Preserve native camera resolution & aspect ratio
-      canvas.width = sourceWidth;
-      canvas.height = sourceHeight;
+      sHeight = Math.round(sourceWidth / targetRatio);
+      sy = Math.max(0, Math.round((sourceHeight - sHeight) / 2));
     }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = currentPreset.targetW;
+    canvas.height = currentPreset.targetH;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
@@ -383,9 +495,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   const currentFilterConfig = FILTERS.find((f) => f.id === filter) || FILTERS[0];
   const allShotsTaken = photos.length >= requiredShots && photos.every(Boolean);
+  const currentPreset = DEVICE_CHOICES.find((d) => d.id === deviceMode) || DEVICE_CHOICES[0];
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-5">
 
       {/* Top Banner Alert & Navigation */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
@@ -397,7 +510,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
             </span>
           </h2>
           <p className="text-xs text-slate-400">
-            Current Filter: <strong className="text-pink-400">{currentFilterConfig.name}</strong> • Timer: <strong className="text-amber-400">{countdownDuration}s</strong>
+            Device: <strong className="text-pink-400">{currentPreset.name} ({currentPreset.badge})</strong> • Filter: <strong className="text-pink-400">{currentFilterConfig.name}</strong> • Timer: <strong className="text-amber-400">{countdownDuration}s</strong>
           </p>
         </div>
 
@@ -422,6 +535,57 @@ export const CameraView: React.FC<CameraViewProps> = ({
         </div>
       </div>
 
+      {/* Device & Aspect Ratio Selector: CP, iPad, Laptop, Camera */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 shadow-md">
+        <div className="flex items-center gap-2">
+          <Layers className="w-4 h-4 text-pink-400 flex-shrink-0" />
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-white uppercase tracking-wider">Device Camera Ratio</span>
+              <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-pink-400 border border-slate-700">
+                Active: {currentPreset.badge}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 hidden sm:block">
+              Auto-calibrates exact aspect ratio and zero stretching for your screen
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto">
+          {DEVICE_CHOICES.map((dev) => {
+            const isSelected = deviceMode === dev.id;
+            const Icon =
+              dev.id === 'cp'
+                ? Smartphone
+                : dev.id === 'ipad'
+                ? Tablet
+                : dev.id === 'laptop'
+                ? Laptop
+                : Camera;
+
+            return (
+              <button
+                key={dev.id}
+                type="button"
+                disabled={isSessionActive}
+                onClick={() => handleDeviceModeChange(dev.id)}
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-extrabold text-xs transition-all border ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-pink-500 to-rose-500 border-pink-400 text-white shadow-lg shadow-pink-500/25 scale-[1.02]'
+                    : 'bg-slate-950/80 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+                title={dev.description}
+              >
+                <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>{dev.name}</span>
+                <span className="text-[10px] opacity-75 font-normal">({dev.shortLabel})</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {cameraError && (
         <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -434,15 +598,14 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
         {/* Left: Main Viewfinder Box */}
         <div className="lg:col-span-3 space-y-4">
-          <div className={`relative rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group transition-all duration-300 ${aspectRatioMode === 'square' ? 'aspect-square max-w-xl mx-auto' : 'aspect-[4/3] max-w-3xl mx-auto'
-            }`}>
+          <div className={`relative rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group transition-all duration-300 ${currentPreset.cssAspect} ${currentPreset.maxWClass} mx-auto`}>
 
             {/* Real Camera Video or Simulated Canvas */}
             {isSimulated ? (
               <canvas
                 ref={virtualCanvasRef}
-                width={aspectRatioMode === 'square' ? 1080 : 1280}
-                height={aspectRatioMode === 'square' ? 1080 : 960}
+                width={currentPreset.targetW}
+                height={currentPreset.targetH}
                 className="w-full h-full object-cover transition-all"
                 style={{
                   filter: currentFilterConfig.cssFilter,
@@ -513,40 +676,19 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
             {/* Top-Right Quick Camera Controls */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-              {/* Aspect Ratio Switcher */}
-              <div className="flex items-center bg-black/60 backdrop-blur-md rounded-xl p-0.5 border border-white/10 text-[11px]">
-                <button
-                  type="button"
-                  disabled={isSessionActive}
-                  onClick={() => setAspectRatioMode('square')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${aspectRatioMode === 'square'
-                      ? 'bg-pink-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
-                    }`}
-                  title="1:1 Square (Original, no expansion or distortion)"
-                >
-                  1:1 Square
-                </button>
-                <button
-                  type="button"
-                  disabled={isSessionActive}
-                  onClick={() => setAspectRatioMode('original')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${aspectRatioMode === 'original'
-                      ? 'bg-pink-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
-                    }`}
-                  title="Original Aspect Ratio (Native webcam, no expansion)"
-                >
-                  Original
-                </button>
+              {/* Quick Active Device Badge */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-xs font-bold text-pink-300">
+                <span>{currentPreset.name}</span>
+                <span className="text-[10px] text-slate-400">({currentPreset.shortLabel})</span>
               </div>
 
               <button
                 onClick={() => setIsMirrored(!isMirrored)}
-                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${isMirrored
+                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+                  isMirrored
                     ? 'bg-pink-500/30 border-pink-500/40 text-pink-300'
                     : 'bg-black/60 border-white/10 text-white'
-                  }`}
+                }`}
                 title="Mirror Camera Flip"
               >
                 <FlipHorizontal className="w-4 h-4" />
@@ -554,10 +696,11 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
               <button
                 onClick={() => setIsSimulated(!isSimulated)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-md border text-xs font-semibold transition-all ${isSimulated
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-md border text-xs font-semibold transition-all ${
+                  isSimulated
                     ? 'bg-purple-600/40 border-purple-400/50 text-purple-300'
                     : 'bg-black/60 border-white/10 text-slate-300 hover:text-white'
-                  }`}
+                }`}
                 title="Toggle Virtual/Real Webcam"
               >
                 <Video className="w-3.5 h-3.5" />
@@ -659,7 +802,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                         : 'border-dashed border-slate-800 bg-slate-950/40'
                     }`}
                 >
-                  <div className={`${aspectRatioMode === 'square' ? 'aspect-square' : 'aspect-[4/3]'} w-full flex items-center justify-center relative transition-all`}>
+                  <div className={`${currentPreset.cssAspect} w-full flex items-center justify-center relative transition-all`}>
                     {photo ? (
                       <>
                         <img
