@@ -146,6 +146,17 @@ function getLocalStore(): LocalStoreData {
       if (!data.picture_templates || data.picture_templates.length === 0) {
         data.picture_templates = [...PRESET_MONTHLY_TEMPLATES];
         saveLocalStore(data);
+      } else {
+        // Refresh system presets so stickers never obstruct text
+        data.picture_templates = data.picture_templates.map((tpl) => {
+          if (tpl.is_system) {
+            const fresh = PRESET_MONTHLY_TEMPLATES.find((p) => p.id === tpl.id);
+            if (fresh) {
+              return { ...fresh, is_default: tpl.is_default };
+            }
+          }
+          return tpl;
+        });
       }
       return data;
     } catch {}
@@ -158,6 +169,16 @@ function getLocalStore(): LocalStoreData {
       const data: LocalStoreData = JSON.parse(raw);
       if (!data.picture_templates || data.picture_templates.length === 0) {
         data.picture_templates = [...PRESET_MONTHLY_TEMPLATES];
+      } else {
+        data.picture_templates = data.picture_templates.map((tpl) => {
+          if (tpl.is_system) {
+            const fresh = PRESET_MONTHLY_TEMPLATES.find((p) => p.id === tpl.id);
+            if (fresh) {
+              return { ...fresh, is_default: tpl.is_default };
+            }
+          }
+          return tpl;
+        });
       }
       saveLocalStore(data);
       return data;

@@ -116,7 +116,7 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
     >
       {/* Optional Top Watermark Badge */}
       {data.watermarkPosition === 'header' && (
-        <div className="pt-3 pb-1 text-center px-4">
+        <div className="relative z-30 pt-3 pb-1 text-center px-4">
           <span
             className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-full ${
               isDarkFrame ? 'bg-white/10 text-slate-300' : 'bg-black/5 text-slate-600'
@@ -128,9 +128,9 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
       )}
 
       {/* Top Brand Logo / Header */}
-      <div className={`text-center px-4 ${data.watermarkPosition === 'header' ? 'pt-1 pb-3' : 'pt-6 pb-3'}`}>
+      <div className={`relative z-30 text-center px-4 ${data.watermarkPosition === 'header' ? 'pt-1 pb-3' : 'pt-6 pb-3'}`}>
         <h2
-          className={`font-black tracking-widest text-xs uppercase ${getFontFamilyClass(data.headerFont)} ${
+          className={`font-black tracking-widest text-xs uppercase drop-shadow-sm ${getFontFamilyClass(data.headerFont)} ${
             data.textColor ? '' : isDarkFrame ? 'text-slate-100' : 'text-slate-900'
           }`}
           style={data.textColor ? { color: data.textColor } : undefined}
@@ -193,12 +193,12 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
       </div>
 
       {/* Footer Branding, Handwritten Note & Date */}
-      <div className="pb-6 pt-2 text-center px-4 space-y-1">
+      <div className="relative z-30 pb-6 pt-2 text-center px-4 space-y-1">
         {data.subtitle && (() => {
           const subtitlePartner = getSubtitlePartnerColor(data.frameColor, data.category, data.subtitleColor);
           return (
             <p
-              className={`font-handwriting text-2xl font-bold leading-tight ${subtitlePartner.className}`}
+              className={`font-handwriting text-2xl font-bold leading-tight drop-shadow-sm ${subtitlePartner.className}`}
               style={{ color: subtitlePartner.hex }}
             >
               {data.subtitle}
@@ -208,7 +208,7 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
 
         {data.showDate && (
           <div
-            className={`flex items-center justify-center gap-2 text-[11px] font-semibold tracking-wider uppercase ${
+            className={`flex items-center justify-center gap-2 text-[11px] font-semibold tracking-wider uppercase drop-shadow-sm ${
               isDarkFrame ? 'text-slate-400' : 'text-slate-500'
             }`}
           >
@@ -220,7 +220,7 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
       </div>
 
       {/* Interactive Sticker Overlay Layer */}
-      <div className="absolute inset-0 pointer-events-none z-20">
+      <div className="absolute inset-0 pointer-events-none z-10">
         {data.stickers.map((stk) => {
           const isSelected = selectedStickerId === stk.id;
 

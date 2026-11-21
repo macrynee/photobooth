@@ -45,60 +45,62 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
 
   const pad = 40;
   const gap = 24;
+  const topPad = data.watermarkPosition === 'header' ? 88 : 66;
+  const footerSpace = 160;
 
   if (data.layout === 'strip-3') {
     canvasWidth = 600;
     photoWidth = canvasWidth - pad * 2; // 520
     photoHeight = Math.round(photoWidth / photoAspect);
-    canvasHeight = pad + 3 * photoHeight + 2 * gap + 180; // space for footer
+    canvasHeight = topPad + 3 * photoHeight + 2 * gap + footerSpace;
     photoPositions = [
-      { x: pad, y: pad, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + photoHeight + gap, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + (photoHeight + gap) * 2, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + photoHeight + gap, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + (photoHeight + gap) * 2, w: photoWidth, h: photoHeight },
     ];
-    footerY = pad + (photoHeight + gap) * 3 + 20;
+    footerY = topPad + (photoHeight + gap) * 3 + 24;
   } else if (data.layout === 'strip-4') {
     canvasWidth = 600;
     photoWidth = canvasWidth - pad * 2; // 520
     photoHeight = Math.round(photoWidth / photoAspect);
-    canvasHeight = pad + 4 * photoHeight + 3 * gap + 180;
+    canvasHeight = topPad + 4 * photoHeight + 3 * gap + footerSpace;
     photoPositions = [
-      { x: pad, y: pad, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + photoHeight + gap, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + (photoHeight + gap) * 2, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + (photoHeight + gap) * 3, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + photoHeight + gap, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + (photoHeight + gap) * 2, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + (photoHeight + gap) * 3, w: photoWidth, h: photoHeight },
     ];
-    footerY = pad + (photoHeight + gap) * 4 + 20;
+    footerY = topPad + (photoHeight + gap) * 4 + 24;
   } else if (data.layout === 'grid-4') {
     canvasWidth = 800;
     const colWidth = (canvasWidth - pad * 2 - gap) / 2; // ~348
     photoWidth = colWidth;
     photoHeight = Math.round(photoWidth / photoAspect);
-    canvasHeight = pad + 2 * photoHeight + gap + 180;
+    canvasHeight = topPad + 2 * photoHeight + gap + footerSpace;
     photoPositions = [
-      { x: pad, y: pad, w: photoWidth, h: photoHeight },
-      { x: pad + photoWidth + gap, y: pad, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + photoHeight + gap, w: photoWidth, h: photoHeight },
-      { x: pad + photoWidth + gap, y: pad + photoHeight + gap, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad, w: photoWidth, h: photoHeight },
+      { x: pad + photoWidth + gap, y: topPad, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + photoHeight + gap, w: photoWidth, h: photoHeight },
+      { x: pad + photoWidth + gap, y: topPad + photoHeight + gap, w: photoWidth, h: photoHeight },
     ];
-    footerY = pad + (photoHeight + gap) * 2 + 20;
+    footerY = topPad + (photoHeight + gap) * 2 + 24;
   } else if (data.layout === 'wide-2') {
     canvasWidth = 800;
     photoWidth = canvasWidth - pad * 2; // 720
     photoHeight = Math.round(photoWidth / photoAspect);
-    canvasHeight = pad + 2 * photoHeight + gap + 180;
+    canvasHeight = topPad + 2 * photoHeight + gap + footerSpace;
     photoPositions = [
-      { x: pad, y: pad, w: photoWidth, h: photoHeight },
-      { x: pad, y: pad + photoHeight + gap, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad, w: photoWidth, h: photoHeight },
+      { x: pad, y: topPad + photoHeight + gap, w: photoWidth, h: photoHeight },
     ];
-    footerY = pad + (photoHeight + gap) * 2 + 20;
+    footerY = topPad + (photoHeight + gap) * 2 + 24;
   } else if (data.layout === 'polaroid-1') {
     canvasWidth = 700;
     photoWidth = canvasWidth - pad * 2; // 620
     photoHeight = Math.round(photoWidth / photoAspect);
-    canvasHeight = pad + photoHeight + 260; // Extra tall classic bottom margin
-    photoPositions = [{ x: pad, y: pad, w: photoWidth, h: photoHeight }];
-    footerY = pad + photoHeight + 40;
+    canvasHeight = topPad + photoHeight + 220;
+    photoPositions = [{ x: pad, y: topPad, w: photoWidth, h: photoHeight }];
+    footerY = topPad + photoHeight + 36;
   }
 
   // Set real canvas dimensions with scaling for high DPI
@@ -134,14 +136,6 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     ctx.strokeStyle = data.borderColor || '#e2e8f0';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, canvasWidth, canvasHeight);
-  }
-
-  // Header Watermark (if positioned at header)
-  if (data.watermarkPosition === 'header') {
-    ctx.textAlign = 'center';
-    ctx.font = '700 11px "Space Grotesk", sans-serif';
-    ctx.fillStyle = isDarkFrame ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.45)';
-    ctx.fillText(`★ ${watermark} ★`, canvasWidth / 2, 22);
   }
 
   // 2. Draw Photos with Filter
@@ -205,33 +199,7 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     }
   }
 
-  // 3. Draw Footer Brand & Captions
-  const textColor = data.textColor || (isDarkFrame ? '#f8fafc' : '#1e293b');
-  const subtextColor = isDarkFrame ? '#94a3b8' : '#64748b';
-
-  ctx.textAlign = 'center';
-  ctx.fillStyle = textColor;
-
-  // Title with custom font
-  ctx.font = getCanvasHeaderFont(data.headerFont, 22);
-  ctx.fillText((data.title || 'SILONG CAFE PHOTOBOOTH').toUpperCase(), canvasWidth / 2, footerY + 24);
-
-  // Subtitle / Personal Note
-  if (data.subtitle) {
-    const subtitlePartner = getSubtitlePartnerColor(data.frameColor, data.category, data.subtitleColor);
-    ctx.font = '600 28px "Caveat", cursive';
-    ctx.fillStyle = subtitlePartner.hex;
-    ctx.fillText(data.subtitle, canvasWidth / 2, footerY + 60);
-  }
-
-  // Date & SILONG CAFE Default Watermark
-  if (data.showDate) {
-    ctx.font = '600 13px "Space Grotesk", sans-serif';
-    ctx.fillStyle = subtextColor;
-    ctx.fillText(`${watermark} • ${data.dateStr}`, canvasWidth / 2, footerY + (data.subtitle ? 92 : 64));
-  }
-
-  // 4. Draw Interactive Stickers
+  // 3. Draw Interactive Stickers & Graphic Accents (Drawn beneath text so text is never covered)
   for (const sticker of data.stickers) {
     const absX = (sticker.x / 100) * canvasWidth;
     const absY = (sticker.y / 100) * canvasHeight;
@@ -276,6 +244,44 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     }
 
     ctx.restore();
+  }
+
+  // 4. Draw Header & Footer Brand & Captions (Rendered ON TOP of stickers with protected text layers)
+  const textColor = data.textColor || (isDarkFrame ? '#f8fafc' : '#1e293b');
+  const subtextColor = isDarkFrame ? '#94a3b8' : '#64748b';
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = textColor;
+
+  // Header Section (Top)
+  if (data.watermarkPosition === 'header') {
+    ctx.font = '700 12px "Space Grotesk", sans-serif';
+    ctx.fillStyle = isDarkFrame ? 'rgba(255, 255, 255, 0.65)' : 'rgba(0, 0, 0, 0.55)';
+    ctx.fillText(`★ ${watermark} ★`, canvasWidth / 2, 28);
+
+    ctx.font = getCanvasHeaderFont(data.headerFont, 20);
+    ctx.fillStyle = textColor;
+    ctx.fillText((data.title || 'SILONG CAFE PHOTOBOOTH').toUpperCase(), canvasWidth / 2, 58);
+  } else {
+    ctx.font = getCanvasHeaderFont(data.headerFont, 22);
+    ctx.fillStyle = textColor;
+    ctx.fillText((data.title || 'SILONG CAFE PHOTOBOOTH').toUpperCase(), canvasWidth / 2, 42);
+  }
+
+  // Footer Section (Bottom)
+  // Subtitle / Personal Handwritten Note
+  if (data.subtitle) {
+    const subtitlePartner = getSubtitlePartnerColor(data.frameColor, data.category, data.subtitleColor);
+    ctx.font = '600 30px "Caveat", cursive';
+    ctx.fillStyle = subtitlePartner.hex;
+    ctx.fillText(data.subtitle, canvasWidth / 2, footerY + 36);
+  }
+
+  // Date & SILONG CAFE Default Watermark
+  if (data.showDate) {
+    ctx.font = '600 13px "Space Grotesk", sans-serif';
+    ctx.fillStyle = subtextColor;
+    ctx.fillText(`${watermark} • ${data.dateStr}`, canvasWidth / 2, footerY + (data.subtitle ? 74 : 44));
   }
 
   return canvas;

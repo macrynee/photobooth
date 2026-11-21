@@ -153,7 +153,7 @@ export const TemplateGalleryModal: React.FC<TemplateGalleryModalProps> = ({
       type: 'emoji',
       content: emoji,
       x: 50 + (Math.random() * 20 - 10),
-      y: 86 + (Math.random() * 8 - 4),
+      y: 48 + (Math.random() * 16 - 8),
       scale: 1.2,
       rotation: Math.floor(Math.random() * 20 - 10),
     };

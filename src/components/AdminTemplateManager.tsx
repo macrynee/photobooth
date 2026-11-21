@@ -136,7 +136,7 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     setFormSubtitleColor(undefined);
     setFormShowDate(true);
     setFormStickers([
-      { id: 'stk_1', type: 'emoji', content: '✨', x: 80, y: 15, scale: 1.2, rotation: 10 },
+      { id: 'stk_1', type: 'emoji', content: '✨', x: 84, y: 26, scale: 1.2, rotation: 10 },
     ]);
     setIsEditorOpen(true);
   };
