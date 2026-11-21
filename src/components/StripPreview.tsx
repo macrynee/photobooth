@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { PhotoStripData, StickerItem } from '../types/photobooth';
 import { FILTERS } from './FilterSelector';
 
@@ -21,9 +21,23 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ id: string; startX: number; startY: number; origX: number; origY: number } | null>(null);
+  const [photoRatio, setPhotoRatio] = useState<number>(1);
 
   const filterConfig = FILTERS.find((f) => f.id === data.filter) || FILTERS[0];
   const isDarkFrame = data.frameColor === '#121214' || data.frameColor === '#0f172a';
+
+  // Detect photo aspect ratio to ensure output is never stretched or expanded
+  useEffect(() => {
+    if (data.photos && data.photos[0]) {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width && img.height) {
+          setPhotoRatio(img.width / img.height);
+        }
+      };
+      img.src = data.photos[0];
+    }
+  }, [data.photos]);
 
   // Handle sticker drag on pointer down
   const handlePointerDown = (e: React.PointerEvent, sticker: StickerItem) => {
@@ -104,7 +118,8 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
             {data.photos.map((photo, idx) => (
               <div
                 key={idx}
-                className="aspect-[4/3] rounded-lg overflow-hidden bg-slate-800 shadow-sm relative"
+                className="rounded-lg overflow-hidden bg-slate-800 shadow-sm relative"
+                style={{ aspectRatio: `${photoRatio}` }}
               >
                 <img
                   src={photo}
@@ -116,7 +131,10 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
             ))}
           </div>
         ) : data.layout === 'polaroid-1' ? (
-          <div className="aspect-square rounded-lg overflow-hidden bg-slate-800 shadow-md">
+          <div
+            className="rounded-lg overflow-hidden bg-slate-800 shadow-md"
+            style={{ aspectRatio: `${photoRatio}` }}
+          >
             {data.photos[0] && (
               <img
                 src={data.photos[0]}
@@ -131,9 +149,8 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
             {data.photos.map((photo, idx) => (
               <div
                 key={idx}
-                className={`rounded-lg overflow-hidden bg-slate-800 shadow-sm relative ${
-                  data.layout === 'wide-2' ? 'aspect-[16/9]' : 'aspect-[4/3]'
-                }`}
+                className="rounded-lg overflow-hidden bg-slate-800 shadow-sm relative"
+                style={{ aspectRatio: `${photoRatio}` }}
               >
                 <img
                   src={photo}

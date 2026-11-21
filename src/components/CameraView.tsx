@@ -41,6 +41,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
   const [isSimulated, setIsSimulated] = useState<boolean>(false);
   const [isMirrored, setIsMirrored] = useState<boolean>(true);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [aspectRatioMode, setAspectRatioMode] = useState<'square' | 'original'>('square');
 
   // Capture session states
   const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
@@ -220,9 +221,44 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   // Capture current frame from webcam or simulated canvas
   const captureCurrentFrame = (): string => {
+    let sourceWidth = 1080;
+    let sourceHeight = 1080;
+    let sourceElement: HTMLVideoElement | HTMLCanvasElement | null = null;
+
+    if (isSimulated && virtualCanvasRef.current) {
+      sourceElement = virtualCanvasRef.current;
+      sourceWidth = virtualCanvasRef.current.width || 1080;
+      sourceHeight = virtualCanvasRef.current.height || 1080;
+    } else if (videoRef.current && videoRef.current.readyState >= 2) {
+      sourceElement = videoRef.current;
+      sourceWidth = videoRef.current.videoWidth || 1280;
+      sourceHeight = videoRef.current.videoHeight || 960;
+    }
+
+    if (!sourceElement) return '';
+
     const canvas = document.createElement('canvas');
-    canvas.width = 1280;
-    canvas.height = 960;
+
+    let sx = 0;
+    let sy = 0;
+    let sWidth = sourceWidth;
+    let sHeight = sourceHeight;
+
+    if (aspectRatioMode === 'square') {
+      // Crop exact center square to prevent stretching or forced expansion
+      const squareSize = Math.min(sourceWidth, sourceHeight);
+      sx = Math.max(0, (sourceWidth - squareSize) / 2);
+      sy = Math.max(0, (sourceHeight - squareSize) / 2);
+      sWidth = squareSize;
+      sHeight = squareSize;
+      canvas.width = 1080;
+      canvas.height = 1080;
+    } else {
+      // Preserve native camera resolution & aspect ratio
+      canvas.width = sourceWidth;
+      canvas.height = sourceHeight;
+    }
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
 
@@ -232,11 +268,17 @@ export const CameraView: React.FC<CameraViewProps> = ({
       ctx.scale(-1, 1);
     }
 
-    if (isSimulated && virtualCanvasRef.current) {
-      ctx.drawImage(virtualCanvasRef.current, 0, 0, canvas.width, canvas.height);
-    } else if (videoRef.current && videoRef.current.readyState >= 2) {
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    }
+    ctx.drawImage(
+      sourceElement,
+      sx,
+      sy,
+      sWidth,
+      sHeight,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
     ctx.restore();
 
     return canvas.toDataURL('image/jpeg', 0.95);
@@ -392,14 +434,16 @@ export const CameraView: React.FC<CameraViewProps> = ({
         
         {/* Left: Main Viewfinder Box */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group">
+          <div className={`relative rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group transition-all duration-300 ${
+            aspectRatioMode === 'square' ? 'aspect-square max-w-xl mx-auto' : 'aspect-[4/3] max-w-3xl mx-auto'
+          }`}>
             
             {/* Real Camera Video or Simulated Canvas */}
             {isSimulated ? (
               <canvas
                 ref={virtualCanvasRef}
-                width={1280}
-                height={960}
+                width={aspectRatioMode === 'square' ? 1080 : 1280}
+                height={aspectRatioMode === 'square' ? 1080 : 960}
                 className="w-full h-full object-cover transition-all"
                 style={{
                   filter: currentFilterConfig.cssFilter,
@@ -470,6 +514,36 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
             {/* Top-Right Quick Camera Controls */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+              {/* Aspect Ratio Switcher */}
+              <div className="flex items-center bg-black/60 backdrop-blur-md rounded-xl p-0.5 border border-white/10 text-[11px]">
+                <button
+                  type="button"
+                  disabled={isSessionActive}
+                  onClick={() => setAspectRatioMode('square')}
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                    aspectRatioMode === 'square'
+                      ? 'bg-pink-500 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="1:1 Square (Original, no expansion or distortion)"
+                >
+                  1:1 Square
+                </button>
+                <button
+                  type="button"
+                  disabled={isSessionActive}
+                  onClick={() => setAspectRatioMode('original')}
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                    aspectRatioMode === 'original'
+                      ? 'bg-pink-500 text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Original Aspect Ratio (Native webcam, no expansion)"
+                >
+                  Original
+                </button>
+              </div>
+
               <button
                 onClick={() => setIsMirrored(!isMirrored)}
                 className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
@@ -592,7 +666,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
                       : 'border-dashed border-slate-800 bg-slate-950/40'
                   }`}
                 >
-                  <div className="aspect-[4/3] w-full flex items-center justify-center relative">
+                  <div className={`${aspectRatioMode === 'square' ? 'aspect-square' : 'aspect-[4/3]'} w-full flex items-center justify-center relative transition-all`}>
                     {photo ? (
                       <>
                         <img

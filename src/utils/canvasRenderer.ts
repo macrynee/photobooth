@@ -31,11 +31,14 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     )
   );
 
-  // Layout metrics based on layout type
+  // Layout metrics based on layout type & photo natural aspect ratio (default 1.0 square)
+  const sampleImg = loadedImages.find((img) => img && img.width > 0);
+  const photoAspect = sampleImg ? sampleImg.width / sampleImg.height : 1;
+
   let canvasWidth = 600;
   let canvasHeight = 1800;
   let photoWidth = 520;
-  let photoHeight = 390; // 4:3 ratio standard photo
+  let photoHeight = Math.round(photoWidth / photoAspect);
   let photoPositions: Array<{ x: number; y: number; w: number; h: number }> = [];
   let footerY = 0;
 
@@ -45,7 +48,7 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
   if (data.layout === 'strip-3') {
     canvasWidth = 600;
     photoWidth = canvasWidth - pad * 2; // 520
-    photoHeight = Math.round(photoWidth * 0.75); // 390
+    photoHeight = Math.round(photoWidth / photoAspect);
     canvasHeight = pad + 3 * photoHeight + 2 * gap + 180; // space for footer
     photoPositions = [
       { x: pad, y: pad, w: photoWidth, h: photoHeight },
@@ -55,8 +58,8 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     footerY = pad + (photoHeight + gap) * 3 + 20;
   } else if (data.layout === 'strip-4') {
     canvasWidth = 600;
-    photoWidth = canvasWidth - pad * 2;
-    photoHeight = Math.round(photoWidth * 0.75); // 390
+    photoWidth = canvasWidth - pad * 2; // 520
+    photoHeight = Math.round(photoWidth / photoAspect);
     canvasHeight = pad + 4 * photoHeight + 3 * gap + 180;
     photoPositions = [
       { x: pad, y: pad, w: photoWidth, h: photoHeight },
@@ -69,7 +72,7 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     canvasWidth = 800;
     const colWidth = (canvasWidth - pad * 2 - gap) / 2; // ~348
     photoWidth = colWidth;
-    photoHeight = Math.round(photoWidth * 0.75); // ~261
+    photoHeight = Math.round(photoWidth / photoAspect);
     canvasHeight = pad + 2 * photoHeight + gap + 180;
     photoPositions = [
       { x: pad, y: pad, w: photoWidth, h: photoHeight },
@@ -80,8 +83,8 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     footerY = pad + (photoHeight + gap) * 2 + 20;
   } else if (data.layout === 'wide-2') {
     canvasWidth = 800;
-    photoWidth = canvasWidth - pad * 2;
-    photoHeight = Math.round(photoWidth * 0.5625); // 16:9 ~405
+    photoWidth = canvasWidth - pad * 2; // 720
+    photoHeight = Math.round(photoWidth / photoAspect);
     canvasHeight = pad + 2 * photoHeight + gap + 180;
     photoPositions = [
       { x: pad, y: pad, w: photoWidth, h: photoHeight },
@@ -91,7 +94,7 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
   } else if (data.layout === 'polaroid-1') {
     canvasWidth = 700;
     photoWidth = canvasWidth - pad * 2; // 620
-    photoHeight = photoWidth; // 1:1 square classic polaroid
+    photoHeight = Math.round(photoWidth / photoAspect);
     canvasHeight = pad + photoHeight + 260; // Extra tall classic bottom margin
     photoPositions = [{ x: pad, y: pad, w: photoWidth, h: photoHeight }];
     footerY = pad + photoHeight + 40;
