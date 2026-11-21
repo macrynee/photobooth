@@ -386,7 +386,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
-      
+
       {/* Top Banner Alert & Navigation */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
         <div>
@@ -431,13 +431,12 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
       {/* Main Studio Viewport & Side Filmstrip */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        
+
         {/* Left: Main Viewfinder Box */}
         <div className="lg:col-span-3 space-y-4">
-          <div className={`relative rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group transition-all duration-300 ${
-            aspectRatioMode === 'square' ? 'aspect-square max-w-xl mx-auto' : 'aspect-[4/3] max-w-3xl mx-auto'
-          }`}>
-            
+          <div className={`relative rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-slate-800 group transition-all duration-300 ${aspectRatioMode === 'square' ? 'aspect-square max-w-xl mx-auto' : 'aspect-[4/3] max-w-3xl mx-auto'
+            }`}>
+
             {/* Real Camera Video or Simulated Canvas */}
             {isSimulated ? (
               <canvas
@@ -520,11 +519,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
                   type="button"
                   disabled={isSessionActive}
                   onClick={() => setAspectRatioMode('square')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                    aspectRatioMode === 'square'
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${aspectRatioMode === 'square'
                       ? 'bg-pink-500 text-white shadow-sm'
                       : 'text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                   title="1:1 Square (Original, no expansion or distortion)"
                 >
                   1:1 Square
@@ -533,11 +531,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
                   type="button"
                   disabled={isSessionActive}
                   onClick={() => setAspectRatioMode('original')}
-                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                    aspectRatioMode === 'original'
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${aspectRatioMode === 'original'
                       ? 'bg-pink-500 text-white shadow-sm'
                       : 'text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                   title="Original Aspect Ratio (Native webcam, no expansion)"
                 >
                   Original
@@ -546,11 +543,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
               <button
                 onClick={() => setIsMirrored(!isMirrored)}
-                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
-                  isMirrored
+                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${isMirrored
                     ? 'bg-pink-500/30 border-pink-500/40 text-pink-300'
                     : 'bg-black/60 border-white/10 text-white'
-                }`}
+                  }`}
                 title="Mirror Camera Flip"
               >
                 <FlipHorizontal className="w-4 h-4" />
@@ -558,11 +554,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
               <button
                 onClick={() => setIsSimulated(!isSimulated)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-md border text-xs font-semibold transition-all ${
-                  isSimulated
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-md border text-xs font-semibold transition-all ${isSimulated
                     ? 'bg-purple-600/40 border-purple-400/50 text-purple-300'
                     : 'bg-black/60 border-white/10 text-slate-300 hover:text-white'
-                }`}
+                  }`}
                 title="Toggle Virtual/Real Webcam"
               >
                 <Video className="w-3.5 h-3.5" />
@@ -572,7 +567,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
             {/* Bottom In-Viewport Controls Bar */}
             <div className="absolute bottom-4 inset-x-4 z-10 flex items-center justify-between p-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10">
-              
+
               {/* Countdown Selector */}
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] font-semibold text-slate-400 mr-1 hidden sm:inline">
@@ -583,11 +578,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
                     key={t}
                     disabled={isSessionActive}
                     onClick={() => setCountdownDuration(t)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                      countdownDuration === t
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${countdownDuration === t
                         ? 'bg-pink-500 text-white shadow-sm'
                         : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                    }`}
+                      }`}
                   >
                     {t}s
                   </button>
@@ -658,13 +652,12 @@ export const CameraView: React.FC<CameraViewProps> = ({
               return (
                 <div
                   key={idx}
-                  className={`relative rounded-2xl overflow-hidden border transition-all ${
-                    isCurrentlyActive
+                  className={`relative rounded-2xl overflow-hidden border transition-all ${isCurrentlyActive
                       ? 'border-pink-500 ring-2 ring-pink-500/50 bg-slate-800'
                       : photo
-                      ? 'border-slate-700 bg-slate-900'
-                      : 'border-dashed border-slate-800 bg-slate-950/40'
-                  }`}
+                        ? 'border-slate-700 bg-slate-900'
+                        : 'border-dashed border-slate-800 bg-slate-950/40'
+                    }`}
                 >
                   <div className={`${aspectRatioMode === 'square' ? 'aspect-square' : 'aspect-[4/3]'} w-full flex items-center justify-center relative transition-all`}>
                     {photo ? (

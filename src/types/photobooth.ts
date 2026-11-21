@@ -67,4 +67,24 @@ export interface PhotoStripData {
   dateStr: string;
 }
 
+export interface PictureTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  occasion: string; // e.g. 'new_year', 'valentines', 'graduation', 'easter', 'mothers_day', 'pride', 'summer', 'friendship', 'autumn', 'halloween', 'thanksgiving', 'christmas', 'birthday', 'wedding', 'custom'
+  month?: number | null; // 1 to 12
+  layout: LayoutType;
+  filter: FilterType;
+  frameColor: FrameColor;
+  title: string;
+  subtitle: string;
+  showDate: boolean;
+  stickers: StickerItem[];
+  isDefault?: boolean;
+  isSystem?: boolean;
+  createdBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export type AppStep = 'setup' | 'capture' | 'customize' | 'export';

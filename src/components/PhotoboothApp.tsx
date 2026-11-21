@@ -16,6 +16,8 @@ import { sfx } from '@/utils/audio';
 
 type ViewMode = 'booth' | 'admin_login' | 'admin_register' | 'admin_dashboard';
 
+import { PictureTemplate } from '../types/photobooth';
+
 export const PhotoboothApp: React.FC = () => {
   // Check if viewing via QR code session link on mobile
   const [mobileSessionId, setMobileSessionId] = useState<string | null>(null);
@@ -188,7 +190,20 @@ export const PhotoboothApp: React.FC = () => {
           setAdminInfo(null);
           setViewMode('admin_login');
         }}
-        onLaunchBooth={() => {
+        onLaunchBooth={(template?: PictureTemplate) => {
+          if (template) {
+            setStripData((prev) => ({
+              ...prev,
+              layout: template.layout,
+              filter: template.filter,
+              frameColor: template.frameColor,
+              title: template.title,
+              subtitle: template.subtitle,
+              showDate: template.showDate,
+              stickers: template.stickers || [],
+              photos: [],
+            }));
+          }
           setIsBoothLocked(false);
           setViewMode('booth');
         }}
@@ -241,6 +256,19 @@ export const PhotoboothApp: React.FC = () => {
             setShowDate={(b: boolean) => setStripData((prev) => ({ ...prev, showDate: b }))}
             countdownTimer={countdownDuration}
             setCountdownTimer={setCountdownDuration}
+            onApplyTemplate={(template: PictureTemplate) => {
+              setStripData((prev) => ({
+                ...prev,
+                layout: template.layout,
+                filter: template.filter,
+                frameColor: template.frameColor,
+                title: template.title,
+                subtitle: template.subtitle,
+                showDate: template.showDate,
+                stickers: template.stickers || [],
+              }));
+              sfx.playSuccessFanfare();
+            }}
             onStartSession={() => {
               sfx.playTick();
               setStep('capture');

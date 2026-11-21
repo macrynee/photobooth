@@ -86,6 +86,30 @@ VALUES (
     'admin'
 ) ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
+-- 4. Picture Templates Table (Occasions & Monthly Themes)
+CREATE TABLE IF NOT EXISTS picture_templates (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(120) NOT NULL,
+    description TEXT,
+    occasion VARCHAR(64),
+    month INTEGER,
+    layout VARCHAR(32) NOT NULL DEFAULT 'strip-3',
+    filter VARCHAR(32) NOT NULL DEFAULT 'normal',
+    frame_color VARCHAR(32) NOT NULL DEFAULT '#ffffff',
+    title VARCHAR(120) NOT NULL DEFAULT 'SNAPBOX PHOTOBOOTH',
+    subtitle VARCHAR(120) DEFAULT '',
+    show_date BOOLEAN NOT NULL DEFAULT true,
+    stickers JSONB DEFAULT '[]'::jsonb,
+    is_default BOOLEAN NOT NULL DEFAULT false,
+    is_system BOOLEAN NOT NULL DEFAULT false,
+    created_by VARCHAR(64),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_picture_templates_month ON picture_templates(month);
+CREATE INDEX IF NOT EXISTS idx_picture_templates_occasion ON picture_templates(occasion);
+
 -- Initial demo access codes (5-digit single-use codes)
 INSERT INTO access_codes (code, note, max_uses, current_uses, is_active)
 VALUES 

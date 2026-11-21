@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { LayoutType, FrameColor, FilterType } from '../types/photobooth';
-import { LayoutGrid, Check, Sparkles, Clock, Palette } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LayoutType, FrameColor, FilterType, PictureTemplate } from '../types/photobooth';
+import { LayoutGrid, Check, Sparkles, Clock, Palette, Calendar, Layers, ChevronRight, X } from 'lucide-react';
+import { MONTH_NAMES } from './AdminTemplateManager';
 
 interface LayoutSelectorProps {
   selectedLayout: LayoutType;
@@ -17,6 +18,7 @@ interface LayoutSelectorProps {
   setShowDate: (b: boolean) => void;
   countdownTimer: number;
   setCountdownTimer: (s: number) => void;
+  onApplyTemplate?: (template: PictureTemplate) => void;
   onStartSession: () => void;
 }
 
@@ -92,9 +94,50 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   setShowDate,
   countdownTimer,
   setCountdownTimer,
+  onApplyTemplate,
   onStartSession,
 }) => {
   const currentConfig = LAYOUT_OPTIONS.find((l) => l.id === selectedLayout) || LAYOUT_OPTIONS[0];
+
+  const [templates, setTemplates] = useState<PictureTemplate[]>([]);
+  const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
+  const [monthFilter, setMonthFilter] = useState<string>('all');
+  const currentMonthNum = new Date().getMonth() + 1;
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const res = await fetch('/api/templates');
+        if (res.ok) {
+          const data = await res.json();
+          setTemplates(data.templates || []);
+        }
+      } catch (err) {
+        console.error('Failed to load templates:', err);
+      }
+    };
+    fetchTemplates();
+  }, []);
+
+  const handleApplyTemplate = (tpl: PictureTemplate) => {
+    setActiveTemplateId(tpl.id);
+    onSelectLayout(tpl.layout);
+    onSelectFrameColor(tpl.frameColor);
+    setTitle(tpl.title);
+    setSubtitle(tpl.subtitle);
+    setShowDate(tpl.showDate);
+    if (onApplyTemplate) {
+      onApplyTemplate(tpl);
+    }
+  };
+
+  const filteredTemplates = templates.filter((tpl) => {
+    if (monthFilter === 'all') return true;
+    if (monthFilter === 'current') return tpl.month === currentMonthNum;
+    if (monthFilter === 'custom') return tpl.month === null || tpl.month === undefined;
+    const m = parseInt(monthFilter, 10);
+    return tpl.month === m;
+  });
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-8 animate-fadeIn">
@@ -105,12 +148,164 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
           Step 1: Customize Your Booth Experience
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-          Choose Your Photo Strip Layout
+          Choose Your Photo Strip Design
         </h1>
         <p className="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
-          Select your favorite strip arrangement, timer countdown, and frame aesthetics before stepping into the booth.
+          Pick a seasonal monthly design, holiday occasion theme, or build your custom layout from scratch.
         </p>
       </div>
+
+      {/* Occasion & Monthly Templates Showcase */}
+      {templates.length > 0 && (
+        <div className="bg-slate-900/60 p-5 rounded-3xl border border-slate-800 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-pink-400" />
+                <h2 className="text-base font-bold text-white">Occasion & Monthly Themes</h2>
+                <span className="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 text-[10px] font-extrabold border border-pink-500/20">
+                  All 12 Months Ready
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Click any holiday design below to automatically load its headers, frame color, and stickers.
+              </p>
+            </div>
+
+            {/* Quick Filter Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setMonthFilter('all')}
+                className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap border ${
+                  monthFilter === 'all'
+                    ? 'bg-pink-500 border-pink-500 text-white shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                All Themes
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMonthFilter('current')}
+                className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap border flex items-center gap-1 ${
+                  monthFilter === 'current'
+                    ? 'bg-pink-500 border-pink-500 text-white shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>⭐</span>
+                <span>Current Month</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMonthFilter('custom')}
+                className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap border ${
+                  monthFilter === 'custom'
+                    ? 'bg-pink-500 border-pink-500 text-white shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                General & Events
+              </button>
+            </div>
+          </div>
+
+          {/* Horizontal Themed Carousel Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-1">
+            {filteredTemplates.map((tpl) => {
+              const isApplied = activeTemplateId === tpl.id;
+              const monthInfo = tpl.month ? MONTH_NAMES.find((m) => m.num === tpl.month) : null;
+
+              return (
+                <div
+                  key={tpl.id}
+                  onClick={() => handleApplyTemplate(tpl)}
+                  className={`group relative rounded-2xl p-3 cursor-pointer transition-all duration-200 border flex flex-col justify-between ${
+                    isApplied
+                      ? 'bg-slate-800/95 border-pink-500 ring-2 ring-pink-500/40 shadow-lg shadow-pink-500/20 scale-[1.02]'
+                      : 'bg-slate-950/70 border-slate-800 hover:border-slate-700 hover:bg-slate-800/40'
+                  }`}
+                >
+                  {/* Month / Occasion Badge */}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-extrabold text-pink-400 flex items-center gap-1">
+                      <span>{monthInfo ? monthInfo.emoji : '✨'}</span>
+                      <span>{monthInfo ? monthInfo.name.slice(0, 3) : 'EVENT'}</span>
+                    </span>
+
+                    {isApplied && (
+                      <span className="w-4 h-4 rounded-full bg-pink-500 text-white flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Frame Mini Swatch */}
+                  <div
+                    className="p-2 rounded-lg my-1 text-center shadow-inner border border-black/20"
+                    style={{ backgroundColor: tpl.frameColor }}
+                  >
+                    <p
+                      className={`text-[9px] font-black uppercase font-retro truncate ${
+                        tpl.frameColor === '#121214' || tpl.frameColor === '#0f172a'
+                          ? 'text-white'
+                          : 'text-slate-900'
+                      }`}
+                    >
+                      {tpl.title}
+                    </p>
+                    {tpl.subtitle && (
+                      <p
+                        className={`text-[9px] font-handwriting font-bold truncate mt-0.5 ${
+                          tpl.frameColor === '#121214' || tpl.frameColor === '#0f172a'
+                            ? 'text-pink-400'
+                            : 'text-pink-600'
+                        }`}
+                      >
+                        {tpl.subtitle}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Name and Tagline */}
+                  <div className="mt-2">
+                    <h3 className="text-xs font-bold text-white group-hover:text-pink-300 transition-colors truncate">
+                      {tpl.name}
+                    </h3>
+                    <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                      {tpl.layout}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {activeTemplateId && (
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+              <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Theme Applied: <strong>{templates.find((t) => t.id === activeTemplateId)?.name}</strong></span>
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTemplateId(null);
+                  setTitle('SNAPBOX PHOTOBOOTH');
+                  setSubtitle('memories forever ♡');
+                }}
+                className="text-slate-400 hover:text-white text-[11px] font-medium"
+              >
+                Clear Theme & Use Default
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Layout Selection Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">

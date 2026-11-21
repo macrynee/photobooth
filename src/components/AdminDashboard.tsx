@@ -22,7 +22,10 @@ import {
   ExternalLink,
   X,
   FileCode,
+  LayoutGrid,
 } from 'lucide-react';
+import { AdminTemplateManager } from './AdminTemplateManager';
+import { PictureTemplate } from '../types/photobooth';
 
 interface AccessCode {
   id: string;
@@ -57,7 +60,7 @@ interface AdminDashboardProps {
   admin: { id: string; username: string; email: string };
   token: string;
   onLogout: () => void;
-  onLaunchBooth: () => void;
+  onLaunchBooth: (template?: PictureTemplate) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -66,6 +69,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onLogout,
   onLaunchBooth,
 }) => {
+  const [activeTab, setActiveTab] = useState<'codes' | 'templates' | 'sessions'>('codes');
   const [codes, setCodes] = useState<AccessCode[]>([]);
   const [recentSessions, setRecentSessions] = useState<PhotoSession[]>([]);
   const [stats, setStats] = useState<Stats>({
@@ -305,7 +309,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </button>
 
           <button
-            onClick={onLaunchBooth}
+            onClick={() => onLaunchBooth()}
             className="flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-all"
           >
             <Camera className="w-4 h-4" />
@@ -361,8 +365,65 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
+      {/* Admin Section Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto scrollbar-none">
+        <button
+          onClick={() => setActiveTab('codes')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+            activeTab === 'codes'
+              ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <KeyRound className="w-4 h-4" />
+          <span>Access Codes</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-black/25 text-[10px] font-bold">
+            {stats.totalCodes}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('templates')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+            activeTab === 'templates'
+              ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-pink-300" />
+          <span>Picture & Occasion Templates</span>
+          <span className="px-2 py-0.5 rounded-full bg-pink-400/20 text-pink-300 text-[10px] font-extrabold border border-pink-400/30">
+            12 Months Active
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('sessions')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+            activeTab === 'sessions'
+              ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20'
+              : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          <ImageIcon className="w-4 h-4 text-sky-400" />
+          <span>Photo Strips</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-black/25 text-[10px] font-bold">
+            {stats.totalSessions}
+          </span>
+        </button>
+      </div>
+
+      {/* Tab Content: Picture Templates Manager */}
+      {activeTab === 'templates' && (
+        <AdminTemplateManager
+          token={token}
+          onLaunchBoothWithTemplate={onLaunchBooth}
+        />
+      )}
+
       {/* Access Codes Section */}
-      <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-6 space-y-5">
+      {activeTab === 'codes' && (
+        <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-6 space-y-5 animate-fadeIn">
         
         {/* Controls Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -531,10 +592,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
       </div>
+      )}
 
       {/* Recent Photo Strips Section */}
-      {recentSessions.length > 0 && (
-        <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-6 space-y-4">
+      {(activeTab === 'sessions' || (activeTab === 'codes' && recentSessions.length > 0)) && (
+        <div className="bg-slate-900/60 rounded-3xl border border-slate-800 p-6 space-y-4 animate-fadeIn">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-sky-400" />
@@ -545,26 +607,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {recentSessions.map((session) => (
-              <div
-                key={session.id}
-                className="group relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 hover:border-pink-500 transition-colors"
-              >
-                <img
-                  src={session.image_data}
-                  alt={session.title}
-                  className="w-full aspect-[1/2] object-cover group-hover:scale-105 transition-transform"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-2 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-[10px] font-bold text-white truncate">{session.title}</p>
-                  <p className="text-[9px] text-pink-300 font-mono">
-                    Code: {session.access_code || 'Direct'}
-                  </p>
+          {recentSessions.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-6 text-center">
+              No photo strips saved yet. Take some photos in the booth!
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {recentSessions.map((session) => (
+                <div
+                  key={session.id}
+                  className="group relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 hover:border-pink-500 transition-colors"
+                >
+                  <img
+                    src={session.image_data}
+                    alt={session.title}
+                    className="w-full aspect-[1/2] object-cover group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-2 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p className="text-[10px] font-bold text-white truncate">{session.title}</p>
+                    <p className="text-[9px] text-pink-300 font-mono">
+                      Code: {session.access_code || 'Direct'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
