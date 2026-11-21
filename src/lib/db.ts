@@ -2,6 +2,7 @@ import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import { PRESET_GALLERY_TEMPLATES } from '../data/presetTemplates';
 
 export interface AdminRecord {
   id: string;
@@ -42,10 +43,19 @@ export interface PictureTemplateRecord {
   name: string;
   description: string;
   occasion: string;
+  category?: string;
   month: number | null;
   layout: string;
   filter: string;
   frame_color: string;
+  background_pattern?: string;
+  background_image?: string;
+  header_font?: string;
+  text_color?: string;
+  watermark_text?: string;
+  watermark_position?: string;
+  border_style?: string;
+  border_color?: string;
   title: string;
   subtitle: string;
   show_date: boolean;
@@ -57,334 +67,33 @@ export interface PictureTemplateRecord {
   updated_at?: string;
 }
 
-export const PRESET_MONTHLY_TEMPLATES: PictureTemplateRecord[] = [
-  {
-    id: 'tpl_jan_newyear',
-    name: 'New Year Sparkle (January)',
-    description: 'Gold & Noir celebration with party sparkles and champagne toast.',
-    occasion: 'new_year',
-    month: 1,
-    layout: 'strip-4',
-    filter: 'warm',
-    frame_color: '#121214',
-    title: 'HAPPY NEW YEAR 2026',
-    subtitle: 'sparkle & celebrate ✨',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '✨', x: 84, y: 14, scale: 1.3, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '🎉', x: 16, y: 88, scale: 1.2, rotation: -12 },
-      { id: 'stk_3', type: 'badge', content: 'HELLO 2026', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_feb_valentines',
-    name: "Valentine's & Love (February)",
-    description: 'Romantic pastel rose frame with sweet love notes and hearts.',
-    occasion: 'valentines',
-    month: 2,
-    layout: 'strip-3',
-    filter: 'soft',
-    frame_color: '#ffe4e6',
-    title: 'SWEET VALENTINE',
-    subtitle: 'you + me forever ♡',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '💖', x: 82, y: 14, scale: 1.3, rotation: 15 },
-      { id: 'stk_2', type: 'emoji', content: '🌹', x: 18, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'doodle', content: 'love you', x: 50, y: 92, scale: 1.1, rotation: -3 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-02-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_mar_graduation',
-    name: 'Spring Blossom & Grad (March)',
-    description: 'Mint fresh graduation and spring cherry blossoms.',
-    occasion: 'graduation',
-    month: 3,
-    layout: 'grid-4',
-    filter: 'vibrant',
-    frame_color: '#d1fae5',
-    title: 'CLASS OF 2026 • SPRING BLOOM',
-    subtitle: 'blooming into new chapters 🌸',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🌸', x: 85, y: 12, scale: 1.2, rotation: 12 },
-      { id: 'stk_2', type: 'emoji', content: '🎓', x: 15, y: 88, scale: 1.2, rotation: -8 },
-      { id: 'stk_3', type: 'badge', content: 'CONGRATS', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-03-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_apr_easter',
-    name: 'Easter Pastel Dreams (April)',
-    description: 'Dreamy lavender palette with easter bunnies and spring flowers.',
-    occasion: 'easter',
-    month: 4,
-    layout: 'strip-3',
-    filter: 'soft',
-    frame_color: '#ede9fe',
-    title: 'HOPPY EASTER MOMENTS',
-    subtitle: 'spring sunshine & sweet treats 🐣',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🐣', x: 82, y: 15, scale: 1.2, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '🌷', x: 18, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'badge', content: 'SPRING TIME', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-04-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_may_mothers',
-    name: "Mother's Day & Floral Fiesta (May)",
-    description: 'Warm cream polaroid tribute to mothers and families.',
-    occasion: 'mothers_day',
-    month: 5,
-    layout: 'polaroid-1',
-    filter: 'warm',
-    frame_color: '#fef3c7',
-    title: "MOTHER'S DAY SPECIAL",
-    subtitle: 'best mom in the whole world 💐',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '💐', x: 82, y: 14, scale: 1.2, rotation: 15 },
-      { id: 'stk_2', type: 'emoji', content: '👑', x: 18, y: 86, scale: 1.2, rotation: -12 },
-      { id: 'stk_3', type: 'doodle', content: 'best mom', x: 50, y: 92, scale: 1.1, rotation: -2 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-05-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_jun_pride',
-    name: 'Pride & Rainbow Glow (June)',
-    description: 'Vibrant neon pop celebrating love, diversity, and pride.',
-    occasion: 'pride',
-    month: 6,
-    layout: 'strip-4',
-    filter: 'vibrant',
-    frame_color: '#ff007f',
-    title: 'PRIDE • LOVE IS LOVE',
-    subtitle: 'celebrate your true colors 🌈',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🌈', x: 82, y: 14, scale: 1.3, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '✨', x: 18, y: 88, scale: 1.1, rotation: -12 },
-      { id: 'stk_3', type: 'badge', content: 'BE PROUD', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-06-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_jul_summer',
-    name: 'Midsummer Beach Bash (July)',
-    description: 'Ocean navy backdrop with cool retro tones and sunshine.',
-    occasion: 'summer',
-    month: 7,
-    layout: 'grid-4',
-    filter: 'cool',
-    frame_color: '#0f172a',
-    title: 'MIDSUMMER BEACH VIBES',
-    subtitle: 'salt in the air, sand in our hair 🏖️',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🏖️', x: 85, y: 12, scale: 1.2, rotation: 8 },
-      { id: 'stk_2', type: 'emoji', content: '🍹', x: 15, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'badge', content: 'SUNSHINE', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-07-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_aug_friendship',
-    name: 'Golden Hour Besties (August)',
-    description: 'Butter cream film warmth celebrating friendship and sunsets.',
-    occasion: 'friendship',
-    month: 8,
-    layout: 'strip-3',
-    filter: 'warm',
-    frame_color: '#fef3c7',
-    title: 'GOLDEN HOUR BESTIES',
-    subtitle: 'chasing sunsets together 🌻',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🌻', x: 84, y: 14, scale: 1.2, rotation: 12 },
-      { id: 'stk_2', type: 'emoji', content: '💛', x: 18, y: 88, scale: 1.1, rotation: -10 },
-      { id: 'stk_3', type: 'doodle', content: 'besties forever', x: 50, y: 92, scale: 1.1, rotation: -2 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_sep_autumn',
-    name: 'Cozy Autumn Kickoff (September)',
-    description: 'Vintage cinematic wide shots with warm coffee and leaves.',
-    occasion: 'autumn',
-    month: 9,
-    layout: 'wide-2',
-    filter: 'film',
-    frame_color: '#fef3c7',
-    title: 'COZY AUTUMN DAYS',
-    subtitle: 'crisp air & pumpkin spice 🍂',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🍂', x: 85, y: 12, scale: 1.2, rotation: 15 },
-      { id: 'stk_2', type: 'emoji', content: '☕', x: 15, y: 88, scale: 1.2, rotation: -8 },
-      { id: 'stk_3', type: 'badge', content: 'COZY VIBES', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-09-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_oct_halloween',
-    name: 'Spooky Boo Bash (October)',
-    description: 'Noir frame with spooky pumpkins, ghosts, and neon glow.',
-    occasion: 'halloween',
-    month: 10,
-    layout: 'strip-4',
-    filter: 'cyber',
-    frame_color: '#121214',
-    title: 'SPOOKY SEASON • BOO!',
-    subtitle: "creepin' it real all night 🎃",
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🎃', x: 84, y: 14, scale: 1.3, rotation: 12 },
-      { id: 'stk_2', type: 'emoji', content: '👻', x: 18, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'badge', content: 'TRICK OR TREAT', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-10-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_nov_thanksgiving',
-    name: 'Gather & Give Thanks (November)',
-    description: 'Heartwarming 2x2 grid celebrating gratitude and holiday family.',
-    occasion: 'thanksgiving',
-    month: 11,
-    layout: 'grid-4',
-    filter: 'warm',
-    frame_color: '#fef3c7',
-    title: 'GATHER & GIVE THANKS',
-    subtitle: 'grateful, thankful, blessed 🥧',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🥧', x: 85, y: 12, scale: 1.2, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '🦃', x: 15, y: 88, scale: 1.2, rotation: -8 },
-      { id: 'stk_3', type: 'doodle', content: 'so thankful', x: 50, y: 92, scale: 1.1, rotation: -3 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-11-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_dec_christmas',
-    name: 'Merry Christmas & Holiday Magic (December)',
-    description: 'Classic festive strip with Christmas trees, snowflakes and joy.',
-    occasion: 'christmas',
-    month: 12,
-    layout: 'strip-4',
-    filter: 'film',
-    frame_color: '#121214',
-    title: 'MERRY CHRISTMAS • HOLIDAY MAGIC',
-    subtitle: 'warm cozy wishes & snowy kisses ❄️',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🎄', x: 84, y: 14, scale: 1.3, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '🎅', x: 18, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'badge', content: 'MERRY & BRIGHT', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-12-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_birthday',
-    name: 'Birthday Party Pop',
-    description: 'Celebrate another fabulous year with birthday balloons and cake.',
-    occasion: 'birthday',
-    month: null,
-    layout: 'strip-3',
-    filter: 'vibrant',
-    frame_color: '#ffe4e6',
-    title: 'HAPPY BIRTHDAY TO ME!',
-    subtitle: 'another year more fabulous 🎂',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '🎂', x: 82, y: 14, scale: 1.3, rotation: 10 },
-      { id: 'stk_2', type: 'emoji', content: '🥳', x: 18, y: 88, scale: 1.2, rotation: -10 },
-      { id: 'stk_3', type: 'badge', content: 'BIRTHDAY VIP', x: 50, y: 92, scale: 1.0, rotation: 0 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_wedding',
-    name: 'Wedding & Eternal Romance',
-    description: 'Clean classic white instant polaroid for weddings and anniversaries.',
-    occasion: 'wedding',
-    month: null,
-    layout: 'polaroid-1',
-    filter: 'soft',
-    frame_color: '#ffffff',
-    title: 'JUST MARRIED • TO HAVE & TO HOLD',
-    subtitle: 'together is our favorite place 💍',
-    show_date: true,
-    stickers: [
-      { id: 'stk_1', type: 'emoji', content: '💍', x: 82, y: 14, scale: 1.2, rotation: 15 },
-      { id: 'stk_2', type: 'emoji', content: '🥂', x: 18, y: 86, scale: 1.2, rotation: -12 },
-      { id: 'stk_3', type: 'doodle', content: 'forever & always', x: 50, y: 92, scale: 1.1, rotation: -2 },
-    ],
-    is_default: false,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-01-01T00:00:00.000Z',
-  },
-  {
-    id: 'tpl_seoul_classic',
-    name: 'Iconic Seoul Booth Classic',
-    description: 'Original trending 3-cut Korean photobooth strip with signature notes.',
-    occasion: 'general',
-    month: null,
-    layout: 'strip-3',
-    filter: 'normal',
-    frame_color: '#ffffff',
-    title: 'SNAPBOX PHOTOBOOTH',
-    subtitle: 'memories forever ♡',
-    show_date: true,
-    stickers: [],
-    is_default: true,
-    is_system: true,
-    created_by: 'system',
-    created_at: '2026-01-01T00:00:00.000Z',
-  },
-];
+export const PRESET_MONTHLY_TEMPLATES: PictureTemplateRecord[] = PRESET_GALLERY_TEMPLATES.map((t) => ({
+  id: t.id,
+  name: t.name,
+  description: t.description || '',
+  occasion: t.occasion,
+  category: t.category || 'minimalist',
+  month: typeof t.month === 'number' ? t.month : null,
+  layout: t.layout,
+  filter: t.filter,
+  frame_color: t.frameColor,
+  background_pattern: t.backgroundPattern || 'none',
+  background_image: t.backgroundImage,
+  header_font: t.headerFont || 'grotesk',
+  text_color: t.textColor,
+  watermark_text: t.watermarkText || 'SILONG CAFE',
+  watermark_position: t.watermarkPosition || 'footer',
+  border_style: t.borderStyle || 'solid',
+  border_color: t.borderColor,
+  title: t.title,
+  subtitle: t.subtitle,
+  show_date: t.showDate,
+  stickers: t.stickers || [],
+  is_default: !!t.isDefault,
+  is_system: true,
+  created_by: 'system',
+  created_at: t.createdAt || '2026-01-01T00:00:00.000Z',
+}));
 
 interface LocalStoreData {
   admins: AdminRecord[];
@@ -547,11 +256,20 @@ export const db = {
               name VARCHAR(120) NOT NULL,
               description TEXT,
               occasion VARCHAR(64),
+              category VARCHAR(64) DEFAULT 'minimalist',
               month INT,
               layout VARCHAR(32) NOT NULL DEFAULT 'strip-3',
               filter VARCHAR(32) NOT NULL DEFAULT 'normal',
               frame_color VARCHAR(32) NOT NULL DEFAULT '#ffffff',
-              title VARCHAR(120) NOT NULL DEFAULT 'SNAPBOX PHOTOBOOTH',
+              background_pattern VARCHAR(64) DEFAULT 'none',
+              background_image TEXT,
+              header_font VARCHAR(64) DEFAULT 'grotesk',
+              text_color VARCHAR(32),
+              watermark_text VARCHAR(120) DEFAULT 'SILONG CAFE',
+              watermark_position VARCHAR(32) DEFAULT 'footer',
+              border_style VARCHAR(32) DEFAULT 'solid',
+              border_color VARCHAR(32),
+              title VARCHAR(120) NOT NULL DEFAULT 'SILONG CAFE • PHOTOBOOTH',
               subtitle VARCHAR(120) DEFAULT '',
               show_date BOOLEAN NOT NULL DEFAULT true,
               stickers JSONB DEFAULT '[]'::jsonb,
@@ -561,26 +279,46 @@ export const db = {
               created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
               updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
             );
+
+            -- Ensure new columns exist if table was already created earlier
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS category VARCHAR(64) DEFAULT 'minimalist';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS background_pattern VARCHAR(64) DEFAULT 'none';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS background_image TEXT;
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS header_font VARCHAR(64) DEFAULT 'grotesk';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS text_color VARCHAR(32);
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS watermark_text VARCHAR(120) DEFAULT 'SILONG CAFE';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS watermark_position VARCHAR(32) DEFAULT 'footer';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS border_style VARCHAR(32) DEFAULT 'solid';
+            ALTER TABLE picture_templates ADD COLUMN IF NOT EXISTS border_color VARCHAR(32);
           `);
 
           const tplCount = await client.query('SELECT COUNT(*) FROM picture_templates');
           if (parseInt(tplCount.rows[0].count, 10) === 0) {
-            console.log('🎨 Seeding initial 12-month occasion templates into PostgreSQL...');
+            console.log('🎨 Seeding initial gallery templates into PostgreSQL...');
             for (const tpl of PRESET_MONTHLY_TEMPLATES) {
               await client.query(
                 `INSERT INTO picture_templates 
-                 (id, name, description, occasion, month, layout, filter, frame_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $16)
+                 (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $25)
                  ON CONFLICT (id) DO NOTHING`,
                 [
                   tpl.id,
                   tpl.name,
                   tpl.description,
                   tpl.occasion,
+                  tpl.category || 'minimalist',
                   tpl.month,
                   tpl.layout,
                   tpl.filter,
                   tpl.frame_color,
+                  tpl.background_pattern || 'none',
+                  tpl.background_image || null,
+                  tpl.header_font || 'grotesk',
+                  tpl.text_color || null,
+                  tpl.watermark_text || 'SILONG CAFE',
+                  tpl.watermark_position || 'footer',
+                  tpl.border_style || 'solid',
+                  tpl.border_color || null,
                   tpl.title,
                   tpl.subtitle,
                   tpl.show_date,
@@ -592,7 +330,7 @@ export const db = {
                 ]
               );
             }
-            console.log('✅ 12-month occasion templates seeded successfully in PostgreSQL.');
+            console.log('✅ Gallery templates seeded successfully in PostgreSQL.');
           }
         } catch (tplInitErr) {
           console.warn('Template table init notice:', tplInitErr);
@@ -989,11 +727,20 @@ export const db = {
       name: data.name || 'Untitled Template',
       description: data.description || '',
       occasion: data.occasion || 'custom',
+      category: data.category || 'minimalist',
       month: typeof data.month === 'number' ? data.month : null,
       layout: data.layout || 'strip-3',
       filter: data.filter || 'normal',
       frame_color: data.frame_color || '#ffffff',
-      title: data.title || 'SNAPBOX PHOTOBOOTH',
+      background_pattern: data.background_pattern || 'none',
+      background_image: data.background_image || undefined,
+      header_font: data.header_font || 'grotesk',
+      text_color: data.text_color || undefined,
+      watermark_text: data.watermark_text || 'SILONG CAFE',
+      watermark_position: data.watermark_position || 'footer',
+      border_style: data.border_style || 'solid',
+      border_color: data.border_color || undefined,
+      title: data.title || 'SILONG CAFE • PHOTOBOOTH',
       subtitle: data.subtitle || '',
       show_date: data.show_date ?? true,
       stickers: data.stickers || [],
@@ -1009,18 +756,27 @@ export const db = {
       try {
         const res = await pool.query(
           `INSERT INTO picture_templates 
-           (id, name, description, occasion, month, layout, filter, frame_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+           (id, name, description, occasion, category, month, layout, filter, frame_color, background_pattern, background_image, header_font, text_color, watermark_text, watermark_position, border_style, border_color, title, subtitle, show_date, stickers, is_default, is_system, created_by, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
            RETURNING *`,
           [
             item.id,
             item.name,
             item.description,
             item.occasion,
+            item.category,
             item.month,
             item.layout,
             item.filter,
             item.frame_color,
+            item.background_pattern,
+            item.background_image || null,
+            item.header_font,
+            item.text_color || null,
+            item.watermark_text,
+            item.watermark_position,
+            item.border_style,
+            item.border_color || null,
             item.title,
             item.subtitle,
             item.show_date,
@@ -1066,19 +822,30 @@ export const db = {
 
         const res = await pool.query(
           `UPDATE picture_templates SET 
-             name = $1, description = $2, occasion = $3, month = $4, layout = $5,
-             filter = $6, frame_color = $7, title = $8, subtitle = $9, show_date = $10,
-             stickers = $11, is_default = $12, updated_at = $13
-           WHERE id = $14
+             name = $1, description = $2, occasion = $3, category = $4, month = $5, layout = $6,
+             filter = $7, frame_color = $8, background_pattern = $9, background_image = $10,
+             header_font = $11, text_color = $12, watermark_text = $13, watermark_position = $14,
+             border_style = $15, border_color = $16, title = $17, subtitle = $18, show_date = $19,
+             stickers = $20, is_default = $21, updated_at = $22
+           WHERE id = $23
            RETURNING *`,
           [
             merged.name,
             merged.description,
             merged.occasion,
+            merged.category || 'minimalist',
             merged.month,
             merged.layout,
             merged.filter,
             merged.frame_color,
+            merged.background_pattern || 'none',
+            merged.background_image || null,
+            merged.header_font || 'grotesk',
+            merged.text_color || null,
+            merged.watermark_text || 'SILONG CAFE',
+            merged.watermark_position || 'footer',
+            merged.border_style || 'solid',
+            merged.border_color || null,
             merged.title,
             merged.subtitle,
             merged.show_date,

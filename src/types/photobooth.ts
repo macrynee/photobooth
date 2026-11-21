@@ -1,6 +1,24 @@
 export type LayoutType = 'strip-3' | 'strip-4' | 'grid-4' | 'wide-2' | 'polaroid-1';
 export type DeviceRatioMode = 'camera' | 'cp' | 'ipad' | 'laptop';
 
+export type TemplateCategory =
+  | 'all'
+  | 'minimalist'
+  | 'elegant'
+  | 'birthday'
+  | 'wedding'
+  | 'graduation'
+  | 'retro-y2k'
+  | 'christmas'
+  | 'corporate'
+  | 'aesthetic'
+  | 'anniversary'
+  | 'halloween';
+
+export type BackgroundPattern = 'none' | 'dots' | 'grid' | 'stripes' | 'hearts' | 'stars' | 'checker' | 'sparkles';
+
+export type HeaderFont = 'grotesk' | 'sans' | 'serif' | 'handwriting' | 'modern' | 'retro';
+
 export interface LayoutConfig {
   id: LayoutType;
   name: string;
@@ -66,17 +84,35 @@ export interface PhotoStripData {
   subtitle: string;
   showDate: boolean;
   dateStr: string;
+  category?: string;
+  backgroundPattern?: BackgroundPattern;
+  backgroundImage?: string;
+  headerFont?: HeaderFont;
+  textColor?: string;
+  watermarkText?: string; // Default: 'SILONG CAFE'
+  watermarkPosition?: 'header' | 'footer';
+  borderStyle?: 'solid' | 'dashed' | 'double' | 'rounded' | 'none';
+  borderColor?: string;
 }
 
 export interface PictureTemplate {
   id: string;
   name: string;
   description?: string;
-  occasion: string; // e.g. 'new_year', 'valentines', 'graduation', 'easter', 'mothers_day', 'pride', 'summer', 'friendship', 'autumn', 'halloween', 'thanksgiving', 'christmas', 'birthday', 'wedding', 'custom'
+  occasion: string;
+  category?: string; // e.g. 'minimalist', 'elegant', 'birthday', 'wedding', 'graduation', 'retro-y2k', 'christmas', 'corporate', 'aesthetic', 'anniversary', 'halloween'
   month?: number | null; // 1 to 12
   layout: LayoutType;
   filter: FilterType;
   frameColor: FrameColor;
+  backgroundPattern?: BackgroundPattern;
+  backgroundImage?: string;
+  headerFont?: HeaderFont;
+  textColor?: string;
+  watermarkText?: string; // Default: 'SILONG CAFE'
+  watermarkPosition?: 'header' | 'footer';
+  borderStyle?: 'solid' | 'dashed' | 'double' | 'rounded' | 'none';
+  borderColor?: string;
   title: string;
   subtitle: string;
   showDate: boolean;

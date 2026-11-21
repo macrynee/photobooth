@@ -74,10 +74,14 @@ export const PhotoboothApp: React.FC = () => {
     frameColor: '#ffffff',
     photos: [],
     stickers: [],
-    title: 'SNAPBOX PHOTOBOOTH',
+    title: 'SILONG CAFE • STUDIO ARCHIVE',
     subtitle: 'memories forever ♡',
     showDate: true,
     dateStr: getFormattedDate(),
+    watermarkText: 'SILONG CAFE',
+    watermarkPosition: 'footer',
+    backgroundPattern: 'dots',
+    headerFont: 'grotesk',
   });
 
   // Successful Access Code Verification
@@ -110,10 +114,14 @@ export const PhotoboothApp: React.FC = () => {
       frameColor: '#ffffff',
       photos: [],
       stickers: [],
-      title: 'SNAPBOX PHOTOBOOTH',
+      title: 'SILONG CAFE • STUDIO ARCHIVE',
       subtitle: 'memories forever ♡',
       showDate: true,
       dateStr: getFormattedDate(),
+      watermarkText: 'SILONG CAFE',
+      watermarkPosition: 'footer',
+      backgroundPattern: 'dots',
+      headerFont: 'grotesk',
     });
     setStep('setup');
     // Re-lock booth so next user must provide a new single-use code
@@ -202,6 +210,15 @@ export const PhotoboothApp: React.FC = () => {
               subtitle: template.subtitle,
               showDate: template.showDate,
               stickers: template.stickers || [],
+              category: template.category,
+              backgroundPattern: template.backgroundPattern,
+              backgroundImage: template.backgroundImage,
+              headerFont: template.headerFont,
+              textColor: template.textColor,
+              watermarkText: template.watermarkText || 'SILONG CAFE',
+              watermarkPosition: template.watermarkPosition || 'footer',
+              borderStyle: template.borderStyle,
+              borderColor: template.borderColor,
               photos: [],
             }));
           }
@@ -269,6 +286,15 @@ export const PhotoboothApp: React.FC = () => {
                 subtitle: template.subtitle,
                 showDate: template.showDate,
                 stickers: template.stickers || [],
+                category: template.category,
+                backgroundPattern: template.backgroundPattern,
+                backgroundImage: template.backgroundImage,
+                headerFont: template.headerFont,
+                textColor: template.textColor,
+                watermarkText: template.watermarkText || 'SILONG CAFE',
+                watermarkPosition: template.watermarkPosition || 'footer',
+                borderStyle: template.borderStyle,
+                borderColor: template.borderColor,
               }));
               sfx.playSuccessFanfare();
             }}

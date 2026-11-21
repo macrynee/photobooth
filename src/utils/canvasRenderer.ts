@@ -1,4 +1,5 @@
 import { PhotoStripData, FilterType } from '../types/photobooth';
+import { drawCanvasPattern, getCanvasHeaderFont } from './patternStyles';
 
 export const FILTER_CANVAS_MAP: Record<FilterType, string> = {
   normal: 'none',
@@ -105,15 +106,42 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
   canvas.height = canvasHeight * scaleFactor;
   ctx.scale(scaleFactor, scaleFactor);
 
+  const isDarkFrame = data.frameColor === '#121214' || data.frameColor === '#0f172a';
+  const watermark = data.watermarkText || 'SILONG CAFE';
+
   // 1. Draw Frame Background
   ctx.fillStyle = data.frameColor;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  // Subtle border / shadow for white frames
-  if (data.frameColor === '#ffffff' || data.frameColor === '#fef3c7') {
-    ctx.strokeStyle = '#e2e8f0';
+  // Background pattern if configured
+  if (data.backgroundPattern && data.backgroundPattern !== 'none') {
+    drawCanvasPattern(ctx, canvasWidth, canvasHeight, data.backgroundPattern, isDarkFrame);
+  }
+
+  // Custom frame borders
+  if (data.borderStyle === 'double') {
+    ctx.strokeStyle = data.borderColor || (isDarkFrame ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)');
+    ctx.lineWidth = 2;
+    ctx.strokeRect(6, 6, canvasWidth - 12, canvasHeight - 12);
+    ctx.strokeRect(10, 10, canvasWidth - 20, canvasHeight - 20);
+  } else if (data.borderStyle === 'dashed') {
+    ctx.strokeStyle = data.borderColor || (isDarkFrame ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.2)');
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([8, 6]);
+    ctx.strokeRect(8, 8, canvasWidth - 16, canvasHeight - 16);
+    ctx.setLineDash([]);
+  } else if (data.frameColor === '#ffffff' || data.frameColor === '#fef3c7') {
+    ctx.strokeStyle = data.borderColor || '#e2e8f0';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, canvasWidth, canvasHeight);
+  }
+
+  // Header Watermark (if positioned at header)
+  if (data.watermarkPosition === 'header') {
+    ctx.textAlign = 'center';
+    ctx.font = '700 11px "Space Grotesk", sans-serif';
+    ctx.fillStyle = isDarkFrame ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.45)';
+    ctx.fillText(`★ ${watermark} ★`, canvasWidth / 2, 22);
   }
 
   // 2. Draw Photos with Filter
@@ -178,16 +206,15 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
   }
 
   // 3. Draw Footer Brand & Captions
-  const isDarkFrame = data.frameColor === '#121214' || data.frameColor === '#0f172a';
-  const textColor = isDarkFrame ? '#f8fafc' : '#1e293b';
+  const textColor = data.textColor || (isDarkFrame ? '#f8fafc' : '#1e293b');
   const subtextColor = isDarkFrame ? '#94a3b8' : '#64748b';
 
   ctx.textAlign = 'center';
   ctx.fillStyle = textColor;
 
-  // Title
-  ctx.font = '700 24px "Space Grotesk", sans-serif';
-  ctx.fillText(data.title.toUpperCase(), canvasWidth / 2, footerY + 24);
+  // Title with custom font
+  ctx.font = getCanvasHeaderFont(data.headerFont, 22);
+  ctx.fillText((data.title || 'SILONG CAFE PHOTOBOOTH').toUpperCase(), canvasWidth / 2, footerY + 24);
 
   // Subtitle / Personal Note
   if (data.subtitle) {
@@ -196,11 +223,11 @@ export async function renderStripToCanvas(data: PhotoStripData, scaleFactor: num
     ctx.fillText(data.subtitle, canvasWidth / 2, footerY + 60);
   }
 
-  // Date & Photobooth Watermark
+  // Date & SILONG CAFE Default Watermark
   if (data.showDate) {
-    ctx.font = '500 14px "Space Grotesk", sans-serif';
+    ctx.font = '600 13px "Space Grotesk", sans-serif';
     ctx.fillStyle = subtextColor;
-    ctx.fillText(`SNAPBOX • ${data.dateStr}`, canvasWidth / 2, footerY + (data.subtitle ? 92 : 64));
+    ctx.fillText(`${watermark} • ${data.dateStr}`, canvasWidth / 2, footerY + (data.subtitle ? 92 : 64));
   }
 
   // 4. Draw Interactive Stickers

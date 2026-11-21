@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PhotoStripData, StickerItem } from '../types/photobooth';
 import { FILTERS } from './FilterSelector';
+import { getPatternCss, getFontFamilyClass } from '../utils/patternStyles';
 
 interface StripPreviewProps {
   data: PhotoStripData;
@@ -87,6 +88,16 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
   // Determine width based on layout
   const isWide = data.layout === 'wide-2' || data.layout === 'grid-4';
   const maxWidthClass = isWide ? 'max-w-[420px]' : 'max-w-[340px]';
+  const watermark = data.watermarkText || 'SILONG CAFE';
+  const patternStyles = getPatternCss(data.backgroundPattern, isDarkFrame);
+
+  // Outer border calculation
+  let borderStyleValue = data.frameColor === '#ffffff' ? '1px solid #e2e8f0' : 'none';
+  if (data.borderStyle === 'double') {
+    borderStyleValue = `4px double ${data.borderColor || (isDarkFrame ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)')}`;
+  } else if (data.borderStyle === 'dashed') {
+    borderStyleValue = `2px dashed ${data.borderColor || (isDarkFrame ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)')}`;
+  }
 
   return (
     <div
@@ -97,17 +108,34 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
       className={`relative w-full ${maxWidthClass} mx-auto rounded-2xl shadow-2xl transition-all duration-300 select-none overflow-hidden`}
       style={{
         backgroundColor: data.frameColor,
-        border: data.frameColor === '#ffffff' ? '1px solid #e2e8f0' : 'none',
+        border: borderStyleValue,
+        backgroundImage: data.backgroundImage ? `url("${data.backgroundImage}")` : patternStyles.backgroundImage,
+        backgroundSize: data.backgroundImage ? 'cover' : patternStyles.backgroundSize,
+        backgroundPosition: 'center',
       }}
     >
+      {/* Optional Top Watermark Badge */}
+      {data.watermarkPosition === 'header' && (
+        <div className="pt-3 pb-1 text-center px-4">
+          <span
+            className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-full ${
+              isDarkFrame ? 'bg-white/10 text-slate-300' : 'bg-black/5 text-slate-600'
+            }`}
+          >
+            ★ {watermark} ★
+          </span>
+        </div>
+      )}
+
       {/* Top Brand Logo / Header */}
-      <div className="pt-6 pb-3 text-center px-4">
+      <div className={`text-center px-4 ${data.watermarkPosition === 'header' ? 'pt-1 pb-3' : 'pt-6 pb-3'}`}>
         <h2
-          className={`font-black tracking-widest text-xs uppercase font-retro ${
-            isDarkFrame ? 'text-slate-100' : 'text-slate-900'
+          className={`font-black tracking-widest text-xs uppercase ${getFontFamilyClass(data.headerFont)} ${
+            data.textColor ? '' : isDarkFrame ? 'text-slate-100' : 'text-slate-900'
           }`}
+          style={data.textColor ? { color: data.textColor } : undefined}
         >
-          {data.title || 'SNAPBOX PHOTOBOOTH'}
+          {data.title || 'SILONG CAFE PHOTOBOOTH'}
         </h2>
       </div>
 
@@ -184,7 +212,7 @@ export const StripPreview: React.FC<StripPreviewProps> = ({
           >
             <span>{data.dateStr}</span>
             <span>•</span>
-            <span>SNAPBOX STUDIO</span>
+            <span className="font-bold tracking-widest">{watermark}</span>
           </div>
         )}
       </div>

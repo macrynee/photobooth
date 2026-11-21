@@ -22,10 +22,11 @@ import {
   Type,
   Smile,
 } from 'lucide-react';
-import { PictureTemplate, LayoutType, FilterType, FrameColor, StickerItem, PhotoStripData } from '../types/photobooth';
+import { PictureTemplate, LayoutType, FilterType, FrameColor, StickerItem, PhotoStripData, BackgroundPattern, HeaderFont } from '../types/photobooth';
 import { LAYOUT_OPTIONS, FRAME_COLORS } from './LayoutSelector';
 import { FILTERS } from './FilterSelector';
 import { StripPreview } from './StripPreview';
+import { TEMPLATE_CATEGORIES } from '../data/presetTemplates';
 
 interface AdminTemplateManagerProps {
   token: string;
@@ -73,11 +74,15 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
   const [formName, setFormName] = useState<string>('');
   const [formDescription, setFormDescription] = useState<string>('');
   const [formOccasion, setFormOccasion] = useState<string>('custom');
+  const [formCategory, setFormCategory] = useState<string>('minimalist');
   const [formMonth, setFormMonth] = useState<number | null>(null);
   const [formLayout, setFormLayout] = useState<LayoutType>('strip-3');
   const [formFilter, setFormFilter] = useState<FilterType>('normal');
   const [formFrameColor, setFormFrameColor] = useState<FrameColor>('#ffffff');
-  const [formTitle, setFormTitle] = useState<string>('SNAPBOX PHOTOBOOTH');
+  const [formBackgroundPattern, setFormBackgroundPattern] = useState<BackgroundPattern>('none');
+  const [formHeaderFont, setFormHeaderFont] = useState<HeaderFont>('grotesk');
+  const [formWatermarkText, setFormWatermarkText] = useState<string>('SILONG CAFE');
+  const [formTitle, setFormTitle] = useState<string>('SILONG CAFE • STUDIO ARCHIVE');
   const [formSubtitle, setFormSubtitle] = useState<string>('memories forever ♡');
   const [formShowDate, setFormShowDate] = useState<boolean>(true);
   const [formStickers, setFormStickers] = useState<StickerItem[]>([]);
@@ -116,11 +121,15 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     setFormName('');
     setFormDescription('');
     setFormOccasion('custom');
+    setFormCategory('minimalist');
     setFormMonth(null);
     setFormLayout('strip-3');
     setFormFilter('normal');
     setFormFrameColor('#ffffff');
-    setFormTitle('SNAPBOX PHOTOBOOTH');
+    setFormBackgroundPattern('none');
+    setFormHeaderFont('grotesk');
+    setFormWatermarkText('SILONG CAFE');
+    setFormTitle('SILONG CAFE • STUDIO ARCHIVE');
     setFormSubtitle('memories forever ♡');
     setFormShowDate(true);
     setFormStickers([
@@ -135,11 +144,15 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     setFormName(template.name);
     setFormDescription(template.description || '');
     setFormOccasion(template.occasion || 'custom');
+    setFormCategory(template.category || 'minimalist');
     setFormMonth(template.month !== undefined ? template.month : null);
     setFormLayout(template.layout || 'strip-3');
     setFormFilter(template.filter || 'normal');
     setFormFrameColor(template.frameColor || '#ffffff');
-    setFormTitle(template.title || 'SNAPBOX PHOTOBOOTH');
+    setFormBackgroundPattern(template.backgroundPattern || 'none');
+    setFormHeaderFont(template.headerFont || 'grotesk');
+    setFormWatermarkText(template.watermarkText || 'SILONG CAFE');
+    setFormTitle(template.title || 'SILONG CAFE • STUDIO ARCHIVE');
     setFormSubtitle(template.subtitle || '');
     setFormShowDate(template.showDate ?? true);
     setFormStickers(template.stickers || []);
@@ -157,10 +170,14 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
         name: formName.trim(),
         description: formDescription.trim(),
         occasion: formOccasion,
+        category: formCategory,
         month: formMonth,
         layout: formLayout,
         filter: formFilter,
         frameColor: formFrameColor,
+        backgroundPattern: formBackgroundPattern,
+        headerFont: formHeaderFont,
+        watermarkText: formWatermarkText || 'SILONG CAFE',
         title: formTitle.trim(),
         subtitle: formSubtitle.trim(),
         showDate: formShowDate,
@@ -283,10 +300,15 @@ export const AdminTemplateManager: React.FC<AdminTemplateManagerProps> = ({
     frameColor: formFrameColor,
     photos: SAMPLE_PHOTOS,
     stickers: formStickers,
-    title: formTitle || 'SNAPBOX PHOTOBOOTH',
+    title: formTitle || 'SILONG CAFE • STUDIO ARCHIVE',
     subtitle: formSubtitle,
     showDate: formShowDate,
     dateStr: new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
+    backgroundPattern: formBackgroundPattern,
+    headerFont: formHeaderFont,
+    watermarkText: formWatermarkText || 'SILONG CAFE',
+    watermarkPosition: 'footer',
+    category: formCategory,
   };
 
   return (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { LayoutType, FrameColor, FilterType, PictureTemplate, DeviceRatioMode } from '../types/photobooth';
 import { LayoutGrid, Check, Sparkles, Clock, Palette, Calendar, Layers, ChevronRight, X, Smartphone, Tablet, Laptop, Camera } from 'lucide-react';
 import { MONTH_NAMES } from './AdminTemplateManager';
+import { TemplateGalleryModal } from './TemplateGalleryModal';
 
 interface LayoutSelectorProps {
   selectedLayout: LayoutType;
@@ -106,6 +107,7 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   const [templates, setTemplates] = useState<PictureTemplate[]>([]);
   const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
   const [monthFilter, setMonthFilter] = useState<string>('all');
+  const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
   const currentMonthNum = new Date().getMonth() + 1;
 
   useEffect(() => {
@@ -157,6 +159,37 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
         <p className="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
           Pick a seasonal monthly design, holiday occasion theme, or build your custom layout from scratch.
         </p>
+      </div>
+
+      {/* Hero Template Gallery Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-950/40 via-purple-950/30 to-slate-900 border border-pink-500/30 p-5 sm:p-6 shadow-xl shadow-pink-500/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="space-y-1 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 font-extrabold text-[11px] uppercase tracking-wider border border-pink-500/30 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-pink-400" />
+              <span>11 Curated Aesthetic Categories</span>
+            </span>
+            <span className="text-xs text-slate-500 hidden sm:inline">•</span>
+            <span className="text-xs font-semibold text-amber-300 hidden sm:inline">
+              Watermark: SILONG CAFE
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Browse Photo Booth Template Gallery
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+            Minimalist, Old Money, Birthday, Wedding, Graduation, Y2K Retro, Christmas, Corporate, Aesthetic Pastel, Anniversary, and Halloween.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsGalleryOpen(true)}
+          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-pink-500/30 hover:scale-[1.03] active:scale-[0.98] transition-all flex items-center gap-2 whitespace-nowrap"
+        >
+          <span>✨ Open Template Gallery</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Occasion & Monthly Templates Showcase */}
@@ -213,6 +246,15 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
                 }`}
               >
                 General & Events
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsGalleryOpen(true)}
+                className="px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap border bg-gradient-to-r from-pink-500/20 to-purple-500/20 border-pink-500/40 text-pink-300 hover:text-white hover:bg-pink-500/30 flex items-center gap-1"
+              >
+                <span>🎨</span>
+                <span>All 11 Categories →</span>
               </button>
             </div>
           </div>
@@ -553,6 +595,14 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
           </span>
         </button>
       </div>
+
+      {/* Modern Template Gallery Modal */}
+      <TemplateGalleryModal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        onApplyTemplate={handleApplyTemplate}
+        currentTemplateId={activeTemplateId}
+      />
     </div>
   );
 };
